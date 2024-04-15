@@ -1,0 +1,300 @@
+openapi: 3.0.3
+info:
+  title: WASAPhoto API
+  description: APIs for the WASAPhoto web application
+  version: "1.0"
+paths:
+  /login:
+    post:
+      tags: ["login"]
+      summary: Logs in the user
+      operationId: doLogin
+      requestBody:
+        description: User details
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: Maria
+                  pattern: 'ˆ.*?$'
+                  minLength: 3
+                  maxLength: 16
+              required:
+                - username
+      responses:
+        '201':
+          description: User log-in action successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  identifier:
+                    type: string
+                    example: "abcdef012345"
+
+  /set-username:
+    put:
+      summary: Set the username for the logged-in user
+      operationId: setMyUserName
+      requestBody:
+        description: New username
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                newUsername:
+                  type: string
+                  example: NewUsername
+                  pattern: 'ˆ.*?$'
+                  minLength: 3
+                  maxLength: 16
+              required:
+                - newUsername
+      responses:
+        '200':
+          description: Username updated successfully
+
+  /upload-photo:
+    post:
+      summary: Upload a new photo
+      operationId: uploadPhoto
+      requestBody:
+        description: Photo details
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                photoData:
+                  type: string
+                  example: Base64EncodedImageData
+              required:
+                - photoData
+      responses:
+        '201':
+          description: Photo uploaded successfully
+
+  /follow-user:
+    post:
+      summary: Follow another user
+      operationId: followUser
+      requestBody:
+        description: User to follow
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  example: "targetUserId"
+              required:
+                - userId
+      responses:
+        '200':
+          description: User followed successfully
+
+  /unfollow-user:
+    post:
+      summary: Unfollow another user
+      operationId: unfollowUser
+      requestBody:
+        description: User to unfollow
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  example: "targetUserId"
+              required:
+                - userId
+      responses:
+        '200':
+          description: User unfollowed successfully
+
+  /ban-user:
+    post:
+      summary: Ban another user
+      operationId: banUser
+      requestBody:
+        description: User to ban
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  example: "targetUserId"
+              required:
+                - userId
+      responses:
+        '200':
+          description: User banned successfully
+
+  /unban-user:
+    post:
+      summary: Unban another user
+      operationId: unbanUser
+      requestBody:
+        description: User to unban
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  example: "targetUserId"
+              required:
+                - userId
+      responses:
+        '200':
+          description: User unbanned successfully
+
+  /user-profile:
+    get:
+      summary: Get user profile by username
+      operationId: getUserProfile
+      parameters:
+        - name: username
+          in: query
+          description: Username of the user
+          required: true
+          schema:
+            type: string
+            example: "targetUsername"
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                # Define the schema for the user profile here
+
+  /my-stream:
+    get:
+      summary: Get the stream of photos for the logged-in user
+      operationId: getMyStream
+      responses:
+        '200':
+          description: Stream retrieved successfully
+          content:
+            application/json:
+              schema:
+                # Define the schema for the stream here
+
+  /like-photo:
+    post:
+      summary: Like a photo
+      operationId: likePhoto
+      requestBody:
+        description: Photo to like
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                photoId:
+                  type: string
+                  example: "photoIdToLike"
+              required:
+                - photoId
+      responses:
+        '200':
+          description: Photo liked successfully
+
+  /unlike-photo:
+    post:
+      summary: Unlike a photo
+      operationId: unlikePhoto
+      requestBody:
+        description: Photo to unlike
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                photoId:
+                  type: string
+                  example: "photoIdToUnlike"
+              required:
+                - photoId
+      responses:
+        '200':
+          description: Photo unliked successfully
+
+  /comment-photo:
+    post:
+      summary: Comment on a photo
+      operationId: commentPhoto
+      requestBody:
+        description: Comment details
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                photoId:
+                  type: string
+                  example: "photoIdToComment"
+                commentText:
+                  type: string
+                  example: "Nice photo!"
+              required:
+                - photoId
+                - commentText
+      responses:
+        '200':
+          description: Comment added successfully
+
+  /uncomment-photo:
+    post:
+      summary: Remove a comment from a photo
+      operationId: uncommentPhoto
+      requestBody:
+        description: Comment to remove
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                photoId:
+                  type: string
+                  example: "photoIdToRemoveCommentFrom"
+                commentId:
+                  type: string
+                  example: "commentIdToRemove"
+              required:
+                - photoId
+                - commentId
+      responses:
+        '200':
+          description: Comment removed successfully
+
+  /delete-photo:
+    delete:
+      summary: Delete a photo
+      operationId: deletePhoto
+      requestBody:
+        description: Photo to delete
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                photoId:
+                  type: string
+                  example: "photoIdToDelete"
+              required:
+                - photoId
+      responses:
+        '200':
+          description: Photo deleted successfully

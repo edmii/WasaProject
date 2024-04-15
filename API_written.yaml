@@ -1,0 +1,422 @@
+openapi: 3.0.3
+info:
+  title: WASA photo API
+  description: |-
+    API's for the WASA photo web application
+  version: "1.0"
+paths:
+  /login:
+    post:
+      tags: ["login"]
+      summary: Logs in the user
+      description: |-
+        If the user does not exist, it will be created,
+        and an identifier is returned.
+        If the user exists, the user identifier is returned.
+      operationId: doLogin
+      requestBody:
+        required: true
+        description: User details
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "Maria"
+                  minLength: 3
+                  maxLength: 16
+              required: 
+                - name
+      responses:
+        '201':
+          description: User log-in action successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  identifier:
+                    type: string
+                    example: "abcdef012345"
+  /set-username:
+    put:
+      tags: ["set-username"]
+      summary: Change user username
+      operationId: SetMyUserName
+      requestBody:
+        required: true
+        description: New username
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "NewUsername"
+                  minLength: 3
+                  maxLength: 16
+              required: 
+                - name
+      responses:
+        '201':
+          description: Username update action successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  identifier:
+                    type: string
+                    example: "abcdef012345"
+  /upload-photo:
+    put:
+      tags: ["upload-photo"]
+      summary: Upload new photo
+      operationId: uploadPhoto
+      requestBody:
+        description: Photo to upload
+        content:
+          image/*:
+            schema:
+              type: string
+              format: binary
+      responses:
+        '201':
+          description: Photo uploaded successfully
+          content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "Photo uploaded successfully"
+  /follow-user:
+    put:
+      tags: ["follow-user"]
+      summary: follow user
+      operationId: followUser
+      requestBody:
+        required: true
+        description: username of the user to follow
+        content:
+          application/json:
+            schema:
+              type: object
+                properties:
+                  name: 
+                    type: string
+                    example: "user1234"
+                    minLength: 3
+                    maxLength: 16 
+                required: 
+                  - name                
+      responses:
+        '201':
+          description: User followed successfully
+          content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "User followed successfully"
+  /unfollow-user:
+    put:
+      tags: ["unfollow-user"]
+      summary: unfollow user
+      operationId: unfollowUser
+      requestBody:
+        required: true
+        description: username of the user to unfollow
+        content:
+          application/json:
+            schema:
+              type: object
+                properties:
+                  name: 
+                    type: string
+                    example: "user1234"
+                    minLength: 3
+                    maxLength: 16   
+                required: 
+                  - name              
+      responses:
+        '201':
+          description: User unfollowed successfully
+          content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "User unfollowed successfully"
+  /ban-user:
+    put:
+      tags: ["ban-user"]
+      summary: ban user
+      operationId: banUser
+      requestBody:
+        required: true
+        description: username of the user to ban
+        content:
+          application/json:
+            schema:
+              type: object
+                properties:
+                  name: 
+                    type: string
+                    example: "user1234"
+                    minLength: 3
+                    maxLength: 16    
+                required: 
+                  - name             
+      responses:
+        '201':
+          description: User banned successfully
+          content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "User banned successfully"
+  /unban-user:
+    put:
+      tags: ["unban-user"]
+      summary: unban user
+      operationId: unbanUser
+      requestBody:
+        required: true
+        description: username of the user to unban
+        content:
+          application/json:
+            schema:
+              type: object
+                properties:
+                  name: 
+                    type: string
+                    example: "user1234"
+                    minLength: 3
+                    maxLength: 16    
+                required: 
+                  - name             
+      responses:
+        '201':
+          description: User unbanned successfully
+          content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "User unbanned successfully"
+  /get-profile:
+    get:
+      tags: ["get-profile"]
+      summary: get user profile by username
+      operationId: getUserProfile
+      requestBody:
+        required: true
+        description: username of the user
+        content:
+          application/json:
+            schema:
+              type: object
+                properties:
+                  name: 
+                    type: string
+                    example: "user1234"
+                    minLength: 3
+                    maxLength: 16    
+                required: 
+                  - name             
+      responses:
+        '201':
+          description: user profile found
+          content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "User profile found"
+  /get-stream:
+    get:
+      tags: ["get-stream"]
+      summary: get stream of the logged-in user
+      operationId: getMyStream
+      responses:
+        '201':
+          description: user stream retrieved
+          content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: "User stream retrieved"
+  /like-photo:
+    put:
+      tags: ["like-photo"]
+      summary: set like to a picture
+      operationId: likePhoto
+      requestBody:
+        required: true
+        description: photo ID 
+        content:
+          application/json:
+            schema:
+              type: object
+                properties:
+                  photoID: 
+                    type: string
+                    example: "Photo#1234"   
+                required: 
+                  - photoID             
+      responses:
+        '201':
+          description: photo liked
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Photo liked successfully"
+  /unlike-photo:
+    get:
+      tags: ["unlike-photo"]
+      summary: remove like to a liked picture
+      operationId: unlikePhoto
+      requestBody:
+        required: true
+        description: photo ID 
+        content:
+          application/json:
+            schema:
+              type: object
+                properties:
+                  photoID: 
+                    type: string
+                    example: "Photo#1234"   
+                required: 
+                  - photoID   
+      responses:
+        '201':
+          description: photo unliked 
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Photo liked successfully"
+  /comment-photo:
+    get:
+      tags: ["comment-photo"]
+      summary: comment photo
+      operationId: commentPhoto
+      requestBody:
+        required: true
+        description: photo ID and comment
+        content: 
+          application/json:
+            schema:
+              type: object
+                properties:
+                  PhotoID: 
+                    type: string
+                    example: "Photo#1234"
+                  comment: 
+                    type: string
+                    example: "Nice Picture!"
+                required: 
+                  - PhotoID
+                  - comment
+      responses:
+        '201':
+          description: photo commented
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Photo commented successfully"
+  /uncomment-photo:
+    get:
+      tags: ["uncomment-photo"]
+      summary: uncomment photo
+      operationId: uncommentPhoto
+      requestBody:
+        required: true
+        description: photo ID and comment ID
+        content: 
+          application/json:
+            schema:
+              type: object
+                properties:
+                  PhotoID: 
+                    type: string
+                    example: "Photo#1234"
+                  commentID: 
+                    type: string
+                    example: "Comment#1234"
+                required: 
+                  - PhotoID
+                  - commentID
+      responses:
+        '201':
+          description: photo uncommented
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Comment removed successfully"
+  /delete-photo:
+    get:
+      tags: ["delete-photo"]
+      summary: delete photo
+      operationId: deletePhoto
+      requestBody:
+        required: true
+        description: photo ID
+        content: 
+          application/json:
+            schema:
+              type: object
+                properties:
+                  PhotoID: 
+                    type: string
+                    example: "Photo#1234"
+                required: 
+                  - PhotoID
+      responses:
+        '201':
+          description: photo removed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Photo removed successfully"
+          
+
