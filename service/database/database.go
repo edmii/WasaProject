@@ -60,17 +60,101 @@ func New(db *sql.DB) (AppDatabase, error) {
 	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='example_table';`).Scan(&tableName)
 	if errors.Is(err, sql.ErrNoRows) {
 		sqlStmt := `CREATE TABLE example_table (id INTEGER NOT NULL PRIMARY KEY, name TEXT);`
+
 		_, err = db.Exec(sqlStmt)
 		if err != nil {
 			return nil, fmt.Errorf("error creating database structure: %w", err)
 		}
+
+		// Create the User table
+		createTableSQL := `
+			CREATE TABLE IF NOT EXISTS UserDB (
+				UserID INT AUTO_INCREMENT,
+				Username VARCHAR(255) NOT NULL,
+				PRIMARY KEY (UserID)
+			);`
+
+		_, err = db.Exec(createTableSQL)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+
+		createTableSQL2 := `
+			CREATE TABLE IF NOT EXISTS FollowDB (
+				FollowID INT AUTO_INCREMENT,
+				OwnerID INT NOT NULL,
+				FollowedID INT NOT NULL,
+				PRIMARY KEY (FollowID)
+				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
+				FOREIGN KEY (followedID) REFERENCES UserDB(UserID)
+			);`
+		_, err = db.Exec(createTableSQL2)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+
+		createTableSQL3 := `
+			CREATE TABLE IF NOT EXISTS BanDB (
+				BanID INT AUTO_INCREMENT,
+				OwnerID INT NOT NULL,
+				PrayID INT NOT NULL,
+				PRIMARY KEY (BanID)
+				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
+				FOREIGN KEY (PrayID) REFERENCES UserDB(UserID)
+			);`
+		_, err = db.Exec(createTableSQL3)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+
+		createTableSQL6 := `
+			CREATE TABLE IF NOT EXISTS PostDB (
+				PostID INT AUTO_INCREMENT,
+				OwnerID INT NOT NULL,
+				PRIMARY KEY (PostID)
+				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
+			);`
+		_, err = db.Exec(createTableSQL6)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+
+		createTableSQL4 := `
+			CREATE TABLE IF NOT EXISTS LikesDB (
+				LikeID INT AUTO_INCREMENT,
+				OwnerID INT NOT NULL,
+				LikedPhotoID INT NOT NULL,
+				PRIMARY KEY (LikeID)
+				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
+				FOREIGN KEY (LikedPhotoID) REFERENCES PostDB(PostID)
+			);`
+		_, err = db.Exec(createTableSQL4)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+
+		createTableSQL5 := `
+			CREATE TABLE IF NOT EXISTS CommentDB (
+				CommentID INT AUTO_INCREMENT,
+				OwnerID INT NOT NULL,
+				PhotoID INT NOT NULL,
+				Content VarChar(255) NOT NULL,
+				PRIMARY KEY (CommentID)
+				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
+				FOREIGN KEY (PhotoID) REFERENCES PostDB(PostID)
+			);`
+		_, err = db.Exec(createTableSQL5)
+		if err != nil {
+			return nil, fmt.Errorf("error creating database structure: %w", err)
+		}
+
 	}
 
 	return &appdbimpl{
 		c: db,
 	}, nil
-}
 
+}
 func (db *appdbimpl) Ping() error {
 	return db.c.Ping()
 }
