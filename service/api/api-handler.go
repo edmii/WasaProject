@@ -14,6 +14,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/context", rt.wrap(rt.getContextReply))
 	rt.router.GET("/feed", rt.getFeed)
 	rt.router.GET("/db/:table", rt.getDB)
+	rt.router.GET("/createuser/:username", rt.CreateUser)
 
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
