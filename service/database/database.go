@@ -41,6 +41,11 @@ type AppDatabase interface {
 	GetName() (string, error)
 	SetName(name string) error
 	GetDatabaseTableContent(tableName string) ([]map[string]interface{}, error)
+	Createuser(username string) error
+	// FollowUser(ownerID int, followedID int) error
+	// UnfollowUser(ownerID int, followedID int) error
+	// BanUser(ownerID int, prayID int) error
+	// UnbanUser(ownerID int, prayID int) error
 
 	Ping() error
 }
