@@ -68,7 +68,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	createTableSQL := `
 			CREATE TABLE IF NOT EXISTS UserDB (
 				UserID INTEGER NOT NULL PRIMARY KEY,
-				Username VARCHAR(255) NOT NULL,
+				Username VARCHAR(255) NOT NULL
 			);`
 
 	_, err := db.Exec(createTableSQL)
@@ -81,7 +81,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 				FollowID INTEGER NOT NULL PRIMARY KEY,
 				OwnerID INT NOT NULL,
 				FollowedID INT NOT NULL,
-				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
+				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID),
 				FOREIGN KEY (followedID) REFERENCES UserDB(UserID)
 			);`
 	_, err = db.Exec(createTableSQL2)
@@ -94,7 +94,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 				BanID INTEGER NOT NULL PRIMARY KEY,
 				OwnerID INT NOT NULL,
 				PrayID INT NOT NULL,
-				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
+				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID),
 				FOREIGN KEY (PrayID) REFERENCES UserDB(UserID)
 			);`
 	_, err = db.Exec(createTableSQL3)
@@ -118,7 +118,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 				LikeID INTEGER NOT NULL PRIMARY KEY,
 				OwnerID INT NOT NULL,
 				LikedPhotoID INT NOT NULL,
-				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
+				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID),
 				FOREIGN KEY (LikedPhotoID) REFERENCES PostDB(PostID)
 			);`
 	_, err = db.Exec(createTableSQL4)
@@ -132,7 +132,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 				OwnerID INT NOT NULL,
 				PhotoID INT NOT NULL,
 				Content VarChar(255) NOT NULL,
-				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
+				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID),
 				FOREIGN KEY (PhotoID) REFERENCES PostDB(PostID)
 			);`
 	_, err = db.Exec(createTableSQL5)
