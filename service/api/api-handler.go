@@ -15,6 +15,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/feed", rt.getFeed)
 	rt.router.GET("/db/:table", rt.getDB)
 	rt.router.GET("/createuser/:username", rt.CreateUser)
+	rt.router.GET("/DESTROYDB/sure", rt.DestroyDB)
 
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
@@ -60,4 +61,15 @@ func (rt *_router) CreateUser(w http.ResponseWriter, r *http.Request, ps httprou
 
 	w.Header().Set("content-type", "text/plain")
 	_, _ = w.Write([]byte("User created"))
+}
+
+func (rt *_router) DestroyDB(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	err := rt.db.DestroyDB()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("content-type", "text/plain")
+	_, _ = w.Write([]byte("Database destroyed"))
 }

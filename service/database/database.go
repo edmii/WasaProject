@@ -42,6 +42,7 @@ type AppDatabase interface {
 	SetName(name string) error
 	GetDatabaseTableContent(tableName string) ([]map[string]interface{}, error)
 	CreateUser(username string) error
+	DestroyDB() error
 	// FollowUser(ownerID int, followedID int) error
 	// UnfollowUser(ownerID int, followedID int) error
 	// BanUser(ownerID int, prayID int) error
@@ -75,9 +76,8 @@ func New(db *sql.DB) (AppDatabase, error) {
 		// Create the User table
 		createTableSQL := `
 			CREATE TABLE IF NOT EXISTS UserDB (
-				UserID INT AUTO_INCREMENT,
+				UserID INTEGER NOT NULL PRIMARY KEY,
 				Username VARCHAR(255) NOT NULL,
-				PRIMARY KEY (UserID)
 			);`
 
 		_, err = db.Exec(createTableSQL)
@@ -87,10 +87,9 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 		createTableSQL2 := `
 			CREATE TABLE IF NOT EXISTS FollowDB (
-				FollowID INT AUTO_INCREMENT,
+				FollowID INTEGER NOT NULL PRIMARY KEY,
 				OwnerID INT NOT NULL,
 				FollowedID INT NOT NULL,
-				PRIMARY KEY (FollowID)
 				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
 				FOREIGN KEY (followedID) REFERENCES UserDB(UserID)
 			);`
@@ -101,10 +100,9 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 		createTableSQL3 := `
 			CREATE TABLE IF NOT EXISTS BanDB (
-				BanID INT AUTO_INCREMENT,
+				BanID INTEGER NOT NULL PRIMARY KEY,
 				OwnerID INT NOT NULL,
 				PrayID INT NOT NULL,
-				PRIMARY KEY (BanID)
 				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
 				FOREIGN KEY (PrayID) REFERENCES UserDB(UserID)
 			);`
@@ -115,9 +113,8 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 		createTableSQL6 := `
 			CREATE TABLE IF NOT EXISTS PostDB (
-				PostID INT AUTO_INCREMENT,
+				PostID INTEGER NOT NULL PRIMARY KEY,
 				OwnerID INT NOT NULL,
-				PRIMARY KEY (PostID)
 				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
 			);`
 		_, err = db.Exec(createTableSQL6)
@@ -127,10 +124,9 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 		createTableSQL4 := `
 			CREATE TABLE IF NOT EXISTS LikesDB (
-				LikeID INT AUTO_INCREMENT,
+				LikeID INTEGER NOT NULL PRIMARY KEY,
 				OwnerID INT NOT NULL,
 				LikedPhotoID INT NOT NULL,
-				PRIMARY KEY (LikeID)
 				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
 				FOREIGN KEY (LikedPhotoID) REFERENCES PostDB(PostID)
 			);`
@@ -141,11 +137,10 @@ func New(db *sql.DB) (AppDatabase, error) {
 
 		createTableSQL5 := `
 			CREATE TABLE IF NOT EXISTS CommentDB (
-				CommentID INT AUTO_INCREMENT,
+				CommentID INTEGER NOT NULL PRIMARY KEY,
 				OwnerID INT NOT NULL,
 				PhotoID INT NOT NULL,
 				Content VarChar(255) NOT NULL,
-				PRIMARY KEY (CommentID)
 				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
 				FOREIGN KEY (PhotoID) REFERENCES PostDB(PostID)
 			);`
