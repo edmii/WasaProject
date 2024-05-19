@@ -42,7 +42,9 @@ type AppDatabase interface {
 	SetName(name string) error
 	GetDatabaseTableContent(tableName string) ([]map[string]interface{}, error)
 	CreateUser(username string) error
+	// CreateDB() error
 	DestroyDB() error
+
 	// FollowUser(ownerID int, followedID int) error
 	// UnfollowUser(ownerID int, followedID int) error
 	// BanUser(ownerID int, prayID int) error
@@ -62,30 +64,19 @@ func New(db *sql.DB) (AppDatabase, error) {
 		return nil, errors.New("database is required when building a AppDatabase")
 	}
 
-	// Check if table exists. If not, the database is empty, and we need to create the structure
-	var tableName string
-	err := db.QueryRow(`SELECT name FROM sqlite_master WHERE type='table' AND name='example_table';`).Scan(&tableName)
-	if errors.Is(err, sql.ErrNoRows) {
-		sqlStmt := `CREATE TABLE example_table (id INTEGER NOT NULL PRIMARY KEY, name TEXT);`
-
-		_, err = db.Exec(sqlStmt)
-		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
-		}
-
-		// Create the User table
-		createTableSQL := `
+	// Create the User table
+	createTableSQL := `
 			CREATE TABLE IF NOT EXISTS UserDB (
 				UserID INTEGER NOT NULL PRIMARY KEY,
 				Username VARCHAR(255) NOT NULL,
 			);`
 
-		_, err = db.Exec(createTableSQL)
-		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
-		}
+	_, err := db.Exec(createTableSQL)
+	if err != nil {
+		return nil, fmt.Errorf("error creating database structure: %w", err)
+	}
 
-		createTableSQL2 := `
+	createTableSQL2 := `
 			CREATE TABLE IF NOT EXISTS FollowDB (
 				FollowID INTEGER NOT NULL PRIMARY KEY,
 				OwnerID INT NOT NULL,
@@ -93,12 +84,12 @@ func New(db *sql.DB) (AppDatabase, error) {
 				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
 				FOREIGN KEY (followedID) REFERENCES UserDB(UserID)
 			);`
-		_, err = db.Exec(createTableSQL2)
-		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
-		}
+	_, err = db.Exec(createTableSQL2)
+	if err != nil {
+		return nil, fmt.Errorf("error creating database structure: %w", err)
+	}
 
-		createTableSQL3 := `
+	createTableSQL3 := `
 			CREATE TABLE IF NOT EXISTS BanDB (
 				BanID INTEGER NOT NULL PRIMARY KEY,
 				OwnerID INT NOT NULL,
@@ -106,23 +97,23 @@ func New(db *sql.DB) (AppDatabase, error) {
 				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
 				FOREIGN KEY (PrayID) REFERENCES UserDB(UserID)
 			);`
-		_, err = db.Exec(createTableSQL3)
-		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
-		}
+	_, err = db.Exec(createTableSQL3)
+	if err != nil {
+		return nil, fmt.Errorf("error creating database structure: %w", err)
+	}
 
-		createTableSQL6 := `
+	createTableSQL6 := `
 			CREATE TABLE IF NOT EXISTS PostDB (
 				PostID INTEGER NOT NULL PRIMARY KEY,
 				OwnerID INT NOT NULL,
 				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
 			);`
-		_, err = db.Exec(createTableSQL6)
-		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
-		}
+	_, err = db.Exec(createTableSQL6)
+	if err != nil {
+		return nil, fmt.Errorf("error creating database structure: %w", err)
+	}
 
-		createTableSQL4 := `
+	createTableSQL4 := `
 			CREATE TABLE IF NOT EXISTS LikesDB (
 				LikeID INTEGER NOT NULL PRIMARY KEY,
 				OwnerID INT NOT NULL,
@@ -130,12 +121,12 @@ func New(db *sql.DB) (AppDatabase, error) {
 				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
 				FOREIGN KEY (LikedPhotoID) REFERENCES PostDB(PostID)
 			);`
-		_, err = db.Exec(createTableSQL4)
-		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
-		}
+	_, err = db.Exec(createTableSQL4)
+	if err != nil {
+		return nil, fmt.Errorf("error creating database structure: %w", err)
+	}
 
-		createTableSQL5 := `
+	createTableSQL5 := `
 			CREATE TABLE IF NOT EXISTS CommentDB (
 				CommentID INTEGER NOT NULL PRIMARY KEY,
 				OwnerID INT NOT NULL,
@@ -144,18 +135,16 @@ func New(db *sql.DB) (AppDatabase, error) {
 				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
 				FOREIGN KEY (PhotoID) REFERENCES PostDB(PostID)
 			);`
-		_, err = db.Exec(createTableSQL5)
-		if err != nil {
-			return nil, fmt.Errorf("error creating database structure: %w", err)
-		}
-
+	_, err = db.Exec(createTableSQL5)
+	if err != nil {
+		return nil, fmt.Errorf("error creating database structure: %w", err)
 	}
 
 	return &appdbimpl{
 		c: db,
 	}, nil
-
 }
+
 func (db *appdbimpl) Ping() error {
 	return db.c.Ping()
 }
