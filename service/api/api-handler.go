@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strconv"
 
+	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -21,7 +22,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/db/:table", rt.getDB)
 	rt.router.GET("/createuser/:username", rt.CreateUser)
 	rt.router.GET("/DESTROYDB/sure", rt.DestroyDB)
-	rt.router.POST("/createpost/:ownerID", rt.CreatePost)
+	rt.router.POST("/createpost/:ownerID", rt.wrap(rt.CreatePost))
 
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
@@ -80,7 +81,7 @@ func (rt *_router) DestroyDB(w http.ResponseWriter, r *http.Request, ps httprout
 	_, _ = w.Write([]byte("Database destroyed"))
 }
 
-func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	if r.Method != "POST" {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
@@ -102,6 +103,7 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 
 	file, header, err := r.FormFile("file")
 	if err != nil {
+		ctx.Logger.Error("Failed to read file from request", err.Error())
 		http.Error(w, "Failed to read file from request", http.StatusBadRequest)
 		return
 	}
