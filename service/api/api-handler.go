@@ -11,7 +11,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/createuser/:username", rt.CreateUser)
 	rt.router.GET("/DESTROYDB/sure", rt.DestroyDB)
 	rt.router.POST("/createpost/:ownerID", rt.wrap(rt.CreatePost))
-	rt.router.GET("/likepost/:postID/:ownerID", rt.LikePost)
+	rt.router.GET("/likepost/:postID/:ownerID", rt.wrap(rt.CreatePost))
 
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
