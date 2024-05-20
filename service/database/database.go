@@ -42,8 +42,8 @@ type AppDatabase interface {
 	SetName(name string) error
 	GetDatabaseTableContent(tableName string) ([]map[string]interface{}, error)
 	CreateUser(username string) error
-	// CreateDB() error
 	DestroyDB() error
+	CreatePost(ownerID int, directory string) error
 
 	// FollowUser(ownerID int, followedID int) error
 	// UnfollowUser(ownerID int, followedID int) error
@@ -105,6 +105,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	createTableSQL6 := `
 			CREATE TABLE IF NOT EXISTS PostDB (
 				PostID INTEGER NOT NULL PRIMARY KEY,
+				Directory STRING NOT NULL,
 				OwnerID INT NOT NULL,
 				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
 			);`

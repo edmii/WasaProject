@@ -2,7 +2,11 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -16,6 +20,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/db/:table", rt.getDB)
 	rt.router.GET("/createuser/:username", rt.CreateUser)
 	rt.router.GET("/DESTROYDB/sure", rt.DestroyDB)
+	rt.router.GET("/createpost/:ownerID", rt.CreatePost)
 
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
@@ -72,4 +77,53 @@ func (rt *_router) DestroyDB(w http.ResponseWriter, r *http.Request, ps httprout
 
 	w.Header().Set("content-type", "text/plain")
 	_, _ = w.Write([]byte("Database destroyed"))
+}
+
+func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+
+	if r.Method != "POST" {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	ownerID := ps.ByName("ownerID")
+	if ownerID == "" {
+		http.Error(w, "missing ownerID", http.StatusBadRequest)
+		return
+	}
+
+	file, header, err := r.FormFile("file")
+	if err != nil {
+		http.Error(w, "Failed to read file from request", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	uploadPath := "service/database/images-db"
+
+	filepath := filepath.Join(uploadPath, header.Filename)
+
+	out, err := os.Create(filepath)
+	if err != nil {
+		http.Error(w, "Failed to create file", http.StatusInternalServerError)
+		return
+	}
+	defer out.Close()
+
+	_, err = io.Copy(out, file)
+	if err != nil {
+		http.Error(w, "Failed to save file", http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprintf(w, "File %s uploaded successfully", filename)
+
+	err := rt.db.CreatePost(ownerID, filepath)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("content-type", "text/plain")
+	_, _ = w.Write([]byte("Post created"))
 }
