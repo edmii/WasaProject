@@ -21,7 +21,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/db/:table", rt.getDB)
 	rt.router.GET("/createuser/:username", rt.CreateUser)
 	rt.router.GET("/DESTROYDB/sure", rt.DestroyDB)
-	rt.router.GET("/createpost/:ownerID", rt.CreatePost)
+	rt.router.POST("/createpost/:ownerID", rt.CreatePost)
 
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
