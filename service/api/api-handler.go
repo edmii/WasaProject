@@ -109,7 +109,17 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 	}
 	defer file.Close()
 
-	uploadPath := "service/database/images-db"
+	cwd, err := os.Getwd()
+	if err != nil {
+		fmt.Println("Error getting current working directory:", err)
+		return
+	}
+
+	// Define your relative path
+	relativePath := "service/database/images-db"
+
+	// Join the current working directory with the relative path
+	uploadPath := filepath.Join(cwd, relativePath)
 
 	filepath := filepath.Join(uploadPath, header.Filename)
 
