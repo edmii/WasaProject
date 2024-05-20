@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/julienschmidt/httprouter"
 )
@@ -86,9 +87,16 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	ownerID := ps.ByName("ownerID")
-	if ownerID == "" {
+	ownerIDStr := ps.ByName("ownerID")
+
+	if ownerIDStr == "" {
 		http.Error(w, "missing ownerID", http.StatusBadRequest)
+		return
+	}
+
+	ownerID, err := strconv.Atoi(ownerIDStr)
+	if err != nil {
+		http.Error(w, "ownerID not an int", http.StatusBadRequest)
 		return
 	}
 
@@ -116,9 +124,9 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	fmt.Fprintf(w, "File %s uploaded successfully", filename)
+	fmt.Fprintf(w, "File %s uploaded successfully", header.Filename)
 
-	err := rt.db.CreatePost(ownerID, filepath)
+	err = rt.db.CreatePost(ownerID, filepath)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
