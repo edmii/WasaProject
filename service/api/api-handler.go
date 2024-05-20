@@ -103,7 +103,7 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 
 	file, header, err := r.FormFile("file")
 	if err != nil {
-		ctx.Logger.Error("Failed to read file from request", err.Error())
+		ctx.Logger.Info("Failed to read file from request", err.Error())
 		http.Error(w, "Failed to read file from request", http.StatusBadRequest)
 		return
 	}
@@ -115,6 +115,7 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 
 	out, err := os.Create(filepath)
 	if err != nil {
+		ctx.Logger.Info("Failed create file from request", err.Error())
 		http.Error(w, "Failed to create file", http.StatusInternalServerError)
 		return
 	}
