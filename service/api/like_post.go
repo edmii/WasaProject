@@ -4,10 +4,11 @@ import (
 	"net/http"
 	"strconv"
 
+	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) LikePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (rt *_router) LikePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
 	postIDstr := ps.ByName("postID")
 	if postIDstr == "" {
@@ -30,6 +31,7 @@ func (rt *_router) LikePost(w http.ResponseWriter, r *http.Request, ps httproute
 
 	ownerID, err := strconv.Atoi(ownerIDstr)
 	if err != nil {
+		ctx.Logger.Info("Failed to get owner ID", err.Error())
 		http.Error(w, "ownerID not an int", http.StatusBadRequest)
 		return
 	}
