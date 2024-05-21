@@ -8,7 +8,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) UnbanUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) FollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	ownerIdstr := ps.ByName("ownerID")
 
 	if ownerIdstr == "" {
@@ -23,28 +23,28 @@ func (rt *_router) UnbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	prayIDStr := ps.ByName("prayID")
+	followedIDStr := ps.ByName("followedID")
 
-	if prayIDStr == "" {
-		ctx.Logger.Info("Failed to get prayID", err.Error())
-		http.Error(w, "missing prayID", http.StatusBadRequest)
+	if followedIDStr == "" {
+		ctx.Logger.Info("Failed to get followedID", err.Error())
+		http.Error(w, "missing followedID", http.StatusBadRequest)
 		return
 	}
 
-	prayID, err := strconv.Atoi(prayIDStr)
+	followedID, err := strconv.Atoi(followedIDStr)
 	if err != nil {
-		ctx.Logger.Info("Failed to convert prayID in int", err.Error())
-		http.Error(w, "prayID not an int", http.StatusBadRequest)
+		ctx.Logger.Info("Failed to convert followedID in int", err.Error())
+		http.Error(w, "followedID not an int", http.StatusBadRequest)
 		return
 	}
 
-	err = rt.db.UnbanUser(ownerID, prayID)
+	err = rt.db.FollowUser(ownerID, followedID)
 	if err != nil {
-		ctx.Logger.Info("Failed to unban user", err.Error())
+		ctx.Logger.Info("Failed to ban user", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("content-type", "text/plain")
-	_, _ = w.Write([]byte("User unbanned!"))
+	_, _ = w.Write([]byte("User banned!"))
 }
