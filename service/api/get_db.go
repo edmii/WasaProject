@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) getDB(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (rt *_router) getDB(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	table := ps.ByName("table")
 	if table == "" {
 		http.Error(w, "missing table name", http.StatusBadRequest)
@@ -22,6 +23,7 @@ func (rt *_router) getDB(w http.ResponseWriter, r *http.Request, ps httprouter.P
 
 	encoded, err := json.Marshal(content)
 	if err != nil {
+		ctx.Logger.Info("Failed to get JSON encoding of DB", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

@@ -13,36 +13,40 @@ func (rt *_router) BanUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	ownerIdstr := ps.ByName("ownerID")
 
 	if ownerIdstr == "" {
-		http.Error(w, "missing post ID", http.StatusBadRequest)
+		http.Error(w, "missing ownerID", http.StatusBadRequest)
 		return
 	}
 
 	ownerID, err := strconv.Atoi(ownerIdstr)
 	if err != nil {
-		http.Error(w, "postID not an int", http.StatusBadRequest)
+		ctx.Logger.Info("Failed to convert OwnerID in int", err.Error())
+		http.Error(w, "ownerID not an int", http.StatusBadRequest)
 		return
 	}
 
 	prayIDStr := ps.ByName("prayID")
 
 	if prayIDStr == "" {
-		http.Error(w, "missing ownerID", http.StatusBadRequest)
+		ctx.Logger.Info("Failed to get prayID", err.Error())
+		http.Error(w, "missing prayID", http.StatusBadRequest)
 		return
 	}
 
 	prayID, err := strconv.Atoi(prayIDStr)
 	if err != nil {
-		http.Error(w, "ownerID not an int", http.StatusBadRequest)
+		ctx.Logger.Info("Failed to convert prayID in int", err.Error())
+		http.Error(w, "prayID not an int", http.StatusBadRequest)
 		return
 	}
 
 	err = rt.db.BanUser(ownerID, prayID)
 	if err != nil {
+		ctx.Logger.Info("Failed to ban user", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("content-type", "text/plain")
-	_, _ = w.Write([]byte("Post commented!"))
+	_, _ = w.Write([]byte("User banned!"))
 
 }

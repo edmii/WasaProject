@@ -18,6 +18,7 @@ func (rt *_router) LikePost(w http.ResponseWriter, r *http.Request, ps httproute
 
 	postID, err := strconv.Atoi(postIDstr)
 	if err != nil {
+		ctx.Logger.Info("Failed to convert postID in int", err.Error())
 		http.Error(w, "postID not an int", http.StatusBadRequest)
 		return
 	}
@@ -38,6 +39,7 @@ func (rt *_router) LikePost(w http.ResponseWriter, r *http.Request, ps httproute
 
 	err = rt.db.LikePost(postID, ownerID)
 	if err != nil {
+		ctx.Logger.Info("Failed to like post", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

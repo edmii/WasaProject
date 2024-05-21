@@ -16,12 +16,13 @@ func (rt *_router) CommentPost(w http.ResponseWriter, r *http.Request, ps httpro
 
 	postIDstr := ps.ByName("postID")
 	if postIDstr == "" {
-		http.Error(w, "missing post ID", http.StatusBadRequest)
+		http.Error(w, "missing postID", http.StatusBadRequest)
 		return
 	}
 
 	postID, err := strconv.Atoi(postIDstr)
 	if err != nil {
+		ctx.Logger.Info("Failed to convert postID in int", err.Error())
 		http.Error(w, "postID not an int", http.StatusBadRequest)
 		return
 	}
@@ -35,6 +36,7 @@ func (rt *_router) CommentPost(w http.ResponseWriter, r *http.Request, ps httpro
 
 	ownerID, err := strconv.Atoi(ownerIDStr)
 	if err != nil {
+		ctx.Logger.Info("Failed to convert ownerID in int", err.Error())
 		http.Error(w, "ownerID not an int", http.StatusBadRequest)
 		return
 	}
@@ -42,12 +44,13 @@ func (rt *_router) CommentPost(w http.ResponseWriter, r *http.Request, ps httpro
 	content := ps.ByName("content")
 
 	if content == "" {
-		http.Error(w, "missing ownerID", http.StatusBadRequest)
+		http.Error(w, "missing content", http.StatusBadRequest)
 		return
 	}
 
 	err = rt.db.CommentPost(postID, ownerID, content)
 	if err != nil {
+		ctx.Logger.Info("Failed to comment post", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

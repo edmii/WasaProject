@@ -28,6 +28,7 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 
 	ownerID, err := strconv.Atoi(ownerIDStr)
 	if err != nil {
+		ctx.Logger.Info("Failed to convert ownerID in int", err.Error())
 		http.Error(w, "ownerID not an int", http.StatusBadRequest)
 		return
 	}
@@ -42,6 +43,7 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 
 	cwd, err := os.Getwd()
 	if err != nil {
+		ctx.Logger.Info("Failed to get cwd", err.Error())
 		fmt.Println("Error getting current working directory:", err)
 		return
 	}
@@ -64,6 +66,7 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 
 	_, err = io.Copy(out, file)
 	if err != nil {
+		ctx.Logger.Info("Failed to save file", err.Error())
 		http.Error(w, "Failed to save file", http.StatusInternalServerError)
 		return
 	}
@@ -72,6 +75,7 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 
 	err = rt.db.CreatePost(ownerID, filepath)
 	if err != nil {
+		ctx.Logger.Info("Failed to create post", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
