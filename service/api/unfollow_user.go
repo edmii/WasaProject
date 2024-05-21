@@ -8,7 +8,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) FollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) UnfollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	ownerIdstr := ps.ByName("ownerID")
 
 	if ownerIdstr == "" {
@@ -38,13 +38,13 @@ func (rt *_router) FollowUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	err = rt.db.FollowUser(ownerID, followedID)
+	err = rt.db.UnfollowUser(ownerID, followedID)
 	if err != nil {
-		ctx.Logger.Info("Failed to follow user", err.Error())
+		ctx.Logger.Info("Failed to unfollow user", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("content-type", "text/plain")
-	_, _ = w.Write([]byte("User followed!"))
+	_, _ = w.Write([]byte("User unfollowed!"))
 }
