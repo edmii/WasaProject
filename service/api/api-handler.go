@@ -14,7 +14,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/createuser/:username", rt.wrap(rt.CreateUser))
 	rt.router.GET("/banuser/:ownerID/:prayID", rt.wrap(rt.BanUser))
 	rt.router.GET("/unbanuser/:ownerID/:prayID", rt.wrap(rt.UnbanUser))
-	rt.router.GET("/followuser/:ownerID/:followedID", rt.wrap(rt.Followuser))
+	rt.router.GET("/followuser/:ownerID/:followedID", rt.wrap(rt.FollowUser))
 
 	rt.router.POST("/createpost/:ownerID", rt.wrap(rt.CreatePost))
 	rt.router.POST("/likepost/:postID/:ownerID", rt.wrap(rt.LikePost))
