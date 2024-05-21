@@ -9,6 +9,9 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/feed", rt.getFeed)
 	rt.router.GET("/db/:table", rt.getDB)
 	rt.router.GET("/createuser/:username", rt.CreateUser)
+
+	rt.router.GET("/banuser/:ownerID/:prayID", rt.wrap(rt.BanUser))
+
 	rt.router.GET("/DESTROYDB/sure", rt.DestroyDB)
 	rt.router.POST("/createpost/:ownerID", rt.wrap(rt.CreatePost))
 	rt.router.POST("/likepost/:postID/:ownerID", rt.wrap(rt.LikePost))

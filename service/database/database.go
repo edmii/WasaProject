@@ -46,6 +46,7 @@ type AppDatabase interface {
 	CreatePost(ownerID int, directory string) error
 	LikePost(PostID int, OwnerID int) error
 	CommentPost(PostID int, OwnerID int, Content string) error
+	BanUser(OwnerID int, PrayID int) error
 
 	// FollowUser(ownerID int, followedID int) error
 	// UnfollowUser(ownerID int, followedID int) error
