@@ -10,8 +10,8 @@ import (
 
 type Comment struct {
 	Content string `json:"content"`
-	PostID  int    `json: "postID"`
-	OwnerID int    `json: "ownerID"`
+	PostID  int    `json:"postID"`
+	OwnerID int    `json:"ownerID"`
 }
 
 func (rt *_router) CommentPost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
