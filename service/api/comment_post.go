@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
@@ -11,6 +10,8 @@ import (
 
 type Comment struct {
 	Content string `json:"content"`
+	PostID  int    `json: "postID"`
+	OwnerID int    `json: "ownerID"`
 }
 
 func (rt *_router) CommentPost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -19,38 +20,38 @@ func (rt *_router) CommentPost(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	postIDstr := ps.ByName("postID")
-	if postIDstr == "" {
-		http.Error(w, "missing postID", http.StatusBadRequest)
-		return
-	}
+	// postIDstr := ps.ByName("postID")
+	// if postIDstr == "" {
+	// 	http.Error(w, "missing postID", http.StatusBadRequest)
+	// 	return
+	// }
 
-	postID, err := strconv.Atoi(postIDstr)
-	if err != nil {
-		ctx.Logger.Info("Failed to convert postID in int", err.Error())
-		http.Error(w, "postID not an int", http.StatusBadRequest)
-		return
-	}
+	// postID, err := strconv.Atoi(postIDstr)
+	// if err != nil {
+	// 	ctx.Logger.Info("Failed to convert postID in int ", err.Error())
+	// 	http.Error(w, "postID not an int", http.StatusBadRequest)
+	// 	return
+	// }
 
-	ownerIDStr := ps.ByName("ownerID")
+	// ownerIDStr := ps.ByName("ownerID")
 
-	if ownerIDStr == "" {
-		http.Error(w, "missing ownerID", http.StatusBadRequest)
-		return
-	}
+	// if ownerIDStr == "" {
+	// 	http.Error(w, "missing ownerID", http.StatusBadRequest)
+	// 	return
+	// }
 
-	ownerID, err := strconv.Atoi(ownerIDStr)
-	if err != nil {
-		ctx.Logger.Info("Failed to convert ownerID in int", err.Error())
-		http.Error(w, "ownerID not an int", http.StatusBadRequest)
-		return
-	}
+	// ownerID, err := strconv.Atoi(ownerIDStr)
+	// if err != nil {
+	// 	ctx.Logger.Info("Failed to convert ownerID in int ", err.Error())
+	// 	http.Error(w, "ownerID not an int", http.StatusBadRequest)
+	// 	return
+	// }
 
 	var comment Comment
 
-	err = json.NewDecoder(r.Body).Decode(&comment)
+	err := json.NewDecoder(r.Body).Decode(&comment)
 	if err != nil {
-		ctx.Logger.Info("Failed to decode request body", err.Error())
+		ctx.Logger.Info("Failed to decode request body ", err.Error())
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
@@ -60,7 +61,7 @@ func (rt *_router) CommentPost(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	err = rt.db.CommentPost(postID, ownerID, comment.Content)
+	err = rt.db.CommentPost(comment.PostID, comment.OwnerID, comment.Content)
 	if err != nil {
 		ctx.Logger.Info("Failed to comment post", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
