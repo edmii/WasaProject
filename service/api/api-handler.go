@@ -19,7 +19,7 @@ func (rt *_router) Handler() http.Handler {
 
 	rt.router.POST("/createpost/:ownerID", rt.wrap(rt.CreatePost))
 	rt.router.POST("/likepost/:postID/:ownerID", rt.wrap(rt.LikePost))
-	rt.router.POST("/commentpost/:postID/:ownerID/:content", rt.wrap(rt.CommentPost))
+	rt.router.POST("/commentpost/:postID/:ownerID", rt.wrap(rt.CommentPost))
 
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
