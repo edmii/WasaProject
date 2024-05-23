@@ -20,6 +20,30 @@ func (rt *_router) CommentPost(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
+	var comment Comment
+
+	err := json.NewDecoder(r.Body).Decode(&comment)
+	if err != nil {
+		ctx.Logger.Info("Failed to decode request body ", err.Error())
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if comment.Content == "" {
+		http.Error(w, "missing content", http.StatusBadRequest)
+		return
+	}
+
+	err = rt.db.CommentPost(comment.PostID, comment.OwnerID, comment.Content)
+	if err != nil {
+		ctx.Logger.Info("Failed to comment post", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("content-type", "text/plain")
+	_, _ = w.Write([]byte("Post commented!"))
+
 	// postIDstr := ps.ByName("postID")
 	// if postIDstr == "" {
 	// 	http.Error(w, "missing postID", http.StatusBadRequest)
@@ -47,27 +71,4 @@ func (rt *_router) CommentPost(w http.ResponseWriter, r *http.Request, ps httpro
 	// 	return
 	// }
 
-	var comment Comment
-
-	err := json.NewDecoder(r.Body).Decode(&comment)
-	if err != nil {
-		ctx.Logger.Info("Failed to decode request body ", err.Error())
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
-		return
-	}
-
-	if comment.Content == "" {
-		http.Error(w, "missing content", http.StatusBadRequest)
-		return
-	}
-
-	err = rt.db.CommentPost(comment.PostID, comment.OwnerID, comment.Content)
-	if err != nil {
-		ctx.Logger.Info("Failed to comment post", err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("content-type", "text/plain")
-	_, _ = w.Write([]byte("Post commented!"))
 }
