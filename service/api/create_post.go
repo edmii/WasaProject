@@ -1,16 +1,20 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
-	"strconv"
 
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
 )
+
+type Post struct {
+	OwnerID int `json:"ownerID"`
+}
 
 func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
@@ -19,17 +23,17 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	ownerIDStr := ps.ByName("ownerID")
+	var post Post
 
-	if ownerIDStr == "" {
-		http.Error(w, "missing ownerID", http.StatusBadRequest)
+	err := json.NewDecoder(r.Body).Decode(&post)
+	if err != nil {
+		ctx.Logger.Info("Failed to decode request body ", err.Error())
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	ownerID, err := strconv.Atoi(ownerIDStr)
-	if err != nil {
-		ctx.Logger.Info("Failed to convert ownerID in int", err.Error())
-		http.Error(w, "ownerID not an int", http.StatusBadRequest)
+	if post.OwnerID <= 0 {
+		http.Error(w, "ownerID not valid", http.StatusBadRequest)
 		return
 	}
 
@@ -73,7 +77,7 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 
 	fmt.Fprintf(w, "File %s uploaded successfully", header.Filename)
 
-	err = rt.db.CreatePost(ownerID, filepath)
+	err = rt.db.CreatePost(post.OwnerID, filepath)
 	if err != nil {
 		ctx.Logger.Info("Failed to create post", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

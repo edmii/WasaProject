@@ -11,14 +11,14 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/db/:table", rt.wrap(rt.getDB))
 	rt.router.GET("/DESTROYDB/sure", rt.wrap(rt.DestroyDB))
 
-	rt.router.GET("/createuser/:username", rt.wrap(rt.CreateUser))
+	rt.router.GET("/createuser", rt.wrap(rt.CreateUser))
 	rt.router.GET("/banuser", rt.wrap(rt.BanUser))
-	rt.router.GET("/unbanuser/:ownerID/:prayID", rt.wrap(rt.UnbanUser))
-	rt.router.GET("/followuser/:ownerID/:followedID", rt.wrap(rt.FollowUser))
-	rt.router.GET("/unfollowuser/:ownerID/:followedID", rt.wrap(rt.UnfollowUser))
+	rt.router.GET("/unbanuser", rt.wrap(rt.UnbanUser))
+	rt.router.GET("/followuser", rt.wrap(rt.FollowUser))
+	rt.router.GET("/unfollowuser", rt.wrap(rt.UnfollowUser))
 
-	rt.router.POST("/createpost/:ownerID", rt.wrap(rt.CreatePost))
-	rt.router.POST("/likepost/:postID/:ownerID", rt.wrap(rt.LikePost))
+	rt.router.POST("/createpost", rt.wrap(rt.CreatePost))
+	rt.router.POST("/likepost", rt.wrap(rt.LikePost))
 	rt.router.POST("/commentpost", rt.wrap(rt.CommentPost))
 
 	// Special routes

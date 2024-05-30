@@ -1,44 +1,40 @@
 package api
 
 import (
+	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
 )
 
+type Follow struct {
+	FollowedID int `json:"followedID"`
+	OwnerID    int `json:"ownerID"`
+}
+
 func (rt *_router) FollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	ownerIdstr := ps.ByName("ownerID")
 
-	if ownerIdstr == "" {
-		http.Error(w, "missing ownerID", http.StatusBadRequest)
-		return
-	}
+	var follow Follow
 
-	ownerID, err := strconv.Atoi(ownerIdstr)
+	err := json.NewDecoder(r.Body).Decode(&follow)
 	if err != nil {
-		ctx.Logger.Info("Failed to convert OwnerID in int", err.Error())
-		http.Error(w, "ownerID not an int", http.StatusBadRequest)
+		ctx.Logger.Info("Failed to decode request body ", err.Error())
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	followedIDStr := ps.ByName("followedID")
-
-	if followedIDStr == "" {
-		ctx.Logger.Info("Failed to get followedID", err.Error())
-		http.Error(w, "missing followedID", http.StatusBadRequest)
+	if follow.FollowedID <= 0 {
+		http.Error(w, "invalid followedID", http.StatusBadRequest)
 		return
 	}
 
-	followedID, err := strconv.Atoi(followedIDStr)
-	if err != nil {
-		ctx.Logger.Info("Failed to convert followedID in int", err.Error())
-		http.Error(w, "followedID not an int", http.StatusBadRequest)
+	if follow.OwnerID <= 0 {
+		http.Error(w, "invalid OwnerID", http.StatusBadRequest)
 		return
 	}
 
-	err = rt.db.FollowUser(ownerID, followedID)
+	err = rt.db.FollowUser(follow.OwnerID, follow.FollowedID)
 	if err != nil {
 		ctx.Logger.Info("Failed to follow user", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
