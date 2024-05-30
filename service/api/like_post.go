@@ -18,6 +18,11 @@ func (rt *_router) LikePost(w http.ResponseWriter, r *http.Request, ps httproute
 	var like Like
 
 	err := json.NewDecoder(r.Body).Decode(&like)
+	if err != nil {
+		ctx.Logger.Info("Failed to decode request body ", err.Error())
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
 
 	if like.PostID <= 0 {
 		http.Error(w, "invalid post ID", http.StatusBadRequest)
