@@ -34,7 +34,7 @@ func (rt *_router) FollowUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	err = rt.db.FollowUser(follow.OwnerID, follow.FollowedID)
+	result, err := rt.db.FollowUser(follow.OwnerID, follow.FollowedID)
 	if err != nil {
 		ctx.Logger.Info("Failed to follow user", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -42,5 +42,10 @@ func (rt *_router) FollowUser(w http.ResponseWriter, r *http.Request, ps httprou
 	}
 
 	w.Header().Set("content-type", "text/plain")
-	_, _ = w.Write([]byte("User followed!"))
+	switch result {
+	case 1:
+		_, _ = w.Write([]byte("User unfollowed!"))
+	case 2:
+		_, _ = w.Write([]byte("User followed!"))
+	}
 }
