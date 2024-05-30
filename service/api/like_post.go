@@ -34,7 +34,7 @@ func (rt *_router) LikePost(w http.ResponseWriter, r *http.Request, ps httproute
 		return
 	}
 
-	err = rt.db.LikePost(like.PostID, like.OwnerID)
+	result, err := rt.db.LikePost(like.PostID, like.OwnerID)
 	if err != nil {
 		ctx.Logger.Info("Failed to like post", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -42,5 +42,11 @@ func (rt *_router) LikePost(w http.ResponseWriter, r *http.Request, ps httproute
 	}
 
 	w.Header().Set("content-type", "text/plain")
-	_, _ = w.Write([]byte("Post Liked!"))
+	switch result {
+	case 1:
+		_, _ = w.Write([]byte("Post Unliked!"))
+	case 2:
+		_, _ = w.Write([]byte("Post Liked!"))
+	}
+
 }

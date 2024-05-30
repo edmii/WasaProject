@@ -44,7 +44,7 @@ type AppDatabase interface {
 	CreateUser(username string) error
 	DestroyDB() error
 	CreatePost(ownerID int, directory string) error
-	LikePost(PostID int, OwnerID int) error
+	LikePost(PostID int, OwnerID int) (int, error)
 	CommentPost(PostID int, OwnerID int, Content string) error
 	BanUser(OwnerID int, PrayID int) error
 	FollowUser(OwnerID int, FollowedID int) (int, error)
