@@ -34,7 +34,7 @@ func (rt *_router) BanUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	err = rt.db.BanUser(ban.OwnerID, ban.PrayID)
+	result, err := rt.db.BanUser(ban.OwnerID, ban.PrayID)
 	if err != nil {
 		ctx.Logger.Info("Failed to ban user", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -42,7 +42,12 @@ func (rt *_router) BanUser(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	w.Header().Set("content-type", "text/plain")
-	_, _ = w.Write([]byte("User banned!"))
+	switch result {
+	case 1:
+		_, _ = w.Write([]byte("User unbanned!"))
+	case 2:
+		_, _ = w.Write([]byte("User banned!"))
+	}
 
 	// ownerIdstr := ps.ByName("ownerID")
 
