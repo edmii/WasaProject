@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -12,9 +11,9 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-type Post struct {
-	OwnerID int `json:"ownerID"`
-}
+// type Post struct {
+// 	OwnerID int `json:"ownerID"`
+// }
 
 func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
@@ -23,20 +22,29 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	var post Post
-
-	err := json.NewDecoder(r.Body).Decode(&post)
+	// Parse the multipart form with a size limit (e.g., 10 MB)
+	err := r.ParseMultipartForm(10 << 20) // 10MB
 	if err != nil {
-		ctx.Logger.Info("Failed to decode request body ", err.Error())
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		ctx.Logger.Info("Failed to parse multipart form ", err.Error())
+		http.Error(w, "Failed to parse multipart form", http.StatusBadRequest)
 		return
 	}
 
-	if post.OwnerID <= 0 {
-		http.Error(w, "ownerID not valid", http.StatusBadRequest)
+	// Extract ownerID from the form data
+	ownerIDStr := r.FormValue("ownerID")
+	if ownerIDStr == "" {
+		http.Error(w, "ownerID is required", http.StatusBadRequest)
 		return
 	}
 
+	var ownerID int
+	_, err = fmt.Sscanf(ownerIDStr, "%d", &ownerID)
+	if err != nil || ownerID <= 0 {
+		http.Error(w, "Invalid ownerID value", http.StatusBadRequest)
+		return
+	}
+
+	// Extract the file from the form
 	file, header, err := r.FormFile("file")
 	if err != nil {
 		ctx.Logger.Info("Failed to read file from request", err.Error())
@@ -45,6 +53,7 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 	}
 	defer file.Close()
 
+	// Get the current working directory
 	cwd, err := os.Getwd()
 	if err != nil {
 		ctx.Logger.Info("Failed to get cwd", err.Error())
@@ -52,14 +61,16 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	// Define your relative path
+	// Define your relative path for saving the file
 	relativePath := "service/database/images-db"
 
 	// Join the current working directory with the relative path
 	uploadPath := filepath.Join(cwd, relativePath)
 
+	// Create the full filepath for saving the file
 	filepath := filepath.Join(uploadPath, header.Filename)
 
+	// Create the file
 	out, err := os.Create(filepath)
 	if err != nil {
 		ctx.Logger.Info("Failed create file from request", err.Error())
@@ -68,6 +79,7 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 	}
 	defer out.Close()
 
+	// Save the file content to the specified location
 	_, err = io.Copy(out, file)
 	if err != nil {
 		ctx.Logger.Info("Failed to save file", err.Error())
@@ -75,9 +87,10 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	fmt.Fprintf(w, "File %s uploaded successfully", header.Filename)
+	ctx.Logger.Info(fmt.Sprintf("File %s uploaded successfully", header.Filename))
 
-	err = rt.db.CreatePost(post.OwnerID, filepath)
+	// Use the extracted data to create a post
+	err = rt.db.CreatePost(ownerID, filepath)
 	if err != nil {
 		ctx.Logger.Info("Failed to create post", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
