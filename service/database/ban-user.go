@@ -39,7 +39,7 @@ func (db *appdbimpl) BanUser(OwnerID int, PrayID int) (int, error) {
 }
 
 func (db *appdbimpl) GetBannedUsersByOwner(ownerID int) ([]Banned, error) {
-	rows, err := db.c.Query("SELECT ownerID, prayID FROM BanDB WHERE ownerID = $1")
+	rows, err := db.c.Query("SELECT ownerID, prayID FROM BanDB WHERE ownerID = $1", ownerID)
 	if err != nil {
 		return nil, err
 	}
