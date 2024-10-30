@@ -14,9 +14,10 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/DESTROYDB/sure", rt.wrap(rt.DestroyDB))
 
 	rt.router.POST("/createuser", rt.wrap(rt.CreateUser))
-	rt.router.GET("/banuser", rt.wrap(rt.BanUser))
-	rt.router.GET("/getbans/:ownerID", rt.wrap(rt.GetBans))
-	rt.router.GET("/followuser", rt.wrap(rt.FollowUser))
+	rt.router.POST("/banuser", rt.wrap(rt.BanUser))
+	rt.router.GET("/getbans", rt.wrap(rt.GetBans))
+	rt.router.POST("/followuser", rt.wrap(rt.FollowUser))
+	// rt.router.GET("/getfollowers/:ownerID", rt.wrap(rt.GetFollowers))
 
 	rt.router.POST("/createpost", rt.wrap(rt.CreatePost))
 	rt.router.POST("/likepost", rt.wrap(rt.LikePost))

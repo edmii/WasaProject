@@ -3,7 +3,8 @@ package api
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
+
+	// "strconv"
 
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
@@ -53,15 +54,28 @@ func (rt *_router) BanUser(w http.ResponseWriter, r *http.Request, ps httprouter
 }
 
 func (rt *_router) GetBans(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	ownerIDStr := ps.ByName("ownerID")
-	ownerID, err := strconv.Atoi(ownerIDStr)
-	if err != nil || ownerID <= 0 {
+	var ban Ban
+	err := json.NewDecoder(r.Body).Decode(&ban.OwnerID)
+	if err != nil {
+		ctx.Logger.Info("Failed to decode request body ", err.Error())
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if ban.OwnerID <= 0 {
 		http.Error(w, "Invalid OwnerID", http.StatusBadRequest)
 		return
 	}
 
+	// ownerIDStr := ps.ByName("ownerID")
+	// ownerID, err := strconv.Atoi(ownerIDStr)
+	// if err != nil || ownerID <= 0 {
+	// 	http.Error(w, "Invalid OwnerID", http.StatusBadRequest)
+	// 	return
+	// }
+
 	// Get the list of banned users from the database for the given OwnerID
-	bannedUsers, err := rt.db.GetBannedUsersByOwner(ownerID)
+	bannedUsers, err := rt.db.GetBannedUsers(ban.OwnerID)
 	if err != nil {
 		ctx.Logger.Info("Failed to retrieve banned users", err.Error())
 		http.Error(w, "Failed to retrieve banned users", http.StatusInternalServerError)
