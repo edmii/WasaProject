@@ -39,7 +39,7 @@ func (db *appdbimpl) BanUser(OwnerID int, PrayID int) (int, error) {
 }
 
 func (db *appdbimpl) GetBannedUsersByOwner(ownerID int) ([]Banned, error) {
-	rows, err := db.c.Query("SELECT ownerID, prayID FROM BanDB WHERE owner_id = $1")
+	rows, err := db.c.Query("SELECT prayID FROM BanDB WHERE ownerID = $1")
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (db *appdbimpl) GetBannedUsersByOwner(ownerID int) ([]Banned, error) {
 	var bannedUsers []Banned
 	for rows.Next() {
 		var user Banned
-		if err := rows.Scan(&user.OwnerID, &user.PrayID); err != nil {
+		if err := rows.Scan(&user.PrayID); err != nil {
 			return nil, err
 		}
 		bannedUsers = append(bannedUsers, user)
