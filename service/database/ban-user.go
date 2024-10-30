@@ -67,7 +67,7 @@ func (db *appdbimpl) GetBannedUsers(ownerID int) ([]int, error) {
 	}
 
 	if !ownerExists {
-		return nil, fmt.Errorf("one or both users do not exist")
+		return nil, fmt.Errorf("users do not exist")
 	}
 
 	rows, err := db.c.Query("SELECT prayID FROM BanDB WHERE ownerID = $1", ownerID)

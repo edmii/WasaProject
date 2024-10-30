@@ -68,13 +68,6 @@ func (rt *_router) GetBans(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	// ownerIDStr := ps.ByName("ownerID")
-	// ownerID, err := strconv.Atoi(ownerIDStr)
-	// if err != nil || ownerID <= 0 {
-	// 	http.Error(w, "Invalid OwnerID", http.StatusBadRequest)
-	// 	return
-	// }
-
 	// Get the list of banned users from the database for the given OwnerID
 	bannedUsers, err := rt.db.GetBannedUsers(ban.OwnerID)
 	if err != nil {

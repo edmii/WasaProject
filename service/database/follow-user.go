@@ -35,17 +35,17 @@ func (db *appdbimpl) FollowUser(OwnerID int, FollowedID int) (int, error) {
 	}
 }
 
-func (db *appdbimpl) GetFollowers(ownerID int) ([]Follow, error) {
-	rows, err := db.c.Query("SELECT ownerID, followedID FROM FollowDB WHERE ownerID = $1", ownerID)
+func (db *appdbimpl) GetFollowers(ownerID int) ([]int, error) {
+	rows, err := db.c.Query("SELECT followedID FROM FollowDB WHERE ownerID = $1", ownerID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var followers []Follow
+	var followers []int
 	for rows.Next() {
-		var user Follow
-		if err := rows.Scan(&user.OwnerID, &user.FollowedID); err != nil {
+		var user int
+		if err := rows.Scan(&user); err != nil {
 			return nil, err
 		}
 		followers = append(followers, user)

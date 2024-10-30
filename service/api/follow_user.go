@@ -49,3 +49,37 @@ func (rt *_router) FollowUser(w http.ResponseWriter, r *http.Request, ps httprou
 		_, _ = w.Write([]byte("User followed!"))
 	}
 }
+
+func (rt *_router) GetFollowers(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	var follow Follow
+
+	err := json.NewDecoder(r.Body).Decode(&follow)
+	if err != nil {
+		ctx.Logger.Info("Failed to decode request body ", err.Error())
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if follow.OwnerID <= 0 {
+		http.Error(w, "invalid OwnerID", http.StatusBadRequest)
+		return
+	}
+
+	followers, err := rt.db.GetFollowers(follow.OwnerID)
+	if err != nil {
+		ctx.Logger.Info("Failed to get followers", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	response := map[string][]int{
+		"prayID": followers,
+	}
+
+	w.Header().Set("content-type", "application/json")
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		ctx.Logger.Info("Failed to encode followers", err.Error())
+		http.Error(w, "Failed to encode followers", http.StatusInternalServerError)
+		return
+	}
+}
