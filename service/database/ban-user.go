@@ -6,8 +6,7 @@ import (
 
 type Banned struct {
 	OwnerID int `json:"ownerID"`
-	// list of banned users:
-	PrayID int `json:"prayID"`
+	PrayID  int `json:"prayID"`
 }
 
 func (db *appdbimpl) BanUser(OwnerID int, PrayID int) (int, error) {
@@ -38,20 +37,20 @@ func (db *appdbimpl) BanUser(OwnerID int, PrayID int) (int, error) {
 
 }
 
-func (db *appdbimpl) GetBannedUsers(ownerID int) ([]Banned, error) {
-	rows, err := db.c.Query("SELECT ownerID, prayID FROM BanDB WHERE ownerID = $1", ownerID)
+func (db *appdbimpl) GetBannedUsers(ownerID int) ([]int, error) {
+	rows, err := db.c.Query("SELECT prayID FROM BanDB WHERE ownerID = $1", ownerID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var bannedUsers []Banned
+	var bannedUsers []int
 	for rows.Next() {
-		var user Banned
-		if err := rows.Scan(&user.OwnerID, &user.PrayID); err != nil {
+		var PrayID int
+		if err := rows.Scan(&PrayID); err != nil {
 			return nil, err
 		}
-		bannedUsers = append(bannedUsers, user)
+		bannedUsers = append(bannedUsers, PrayID)
 	}
 
 	if err = rows.Err(); err != nil {

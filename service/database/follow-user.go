@@ -2,6 +2,11 @@ package database
 
 import "fmt"
 
+type Follow struct {
+	OwnerID    int `json:"ownerID"`
+	FollowedID int `json:"followedID"`
+}
+
 func (db *appdbimpl) FollowUser(OwnerID int, FollowedID int) (int, error) {
 
 	var exists bool
@@ -28,4 +33,27 @@ func (db *appdbimpl) FollowUser(OwnerID int, FollowedID int) (int, error) {
 		}
 		return 2, nil
 	}
+}
+
+func (db *appdbimpl) GetFollowers(ownerID int) ([]Follow, error) {
+	rows, err := db.c.Query("SELECT ownerID, followedID FROM FollowDB WHERE ownerID = $1", ownerID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var followers []Follow
+	for rows.Next() {
+		var user Follow
+		if err := rows.Scan(&user.OwnerID, &user.FollowedID); err != nil {
+			return nil, err
+		}
+		followers = append(followers, user)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return followers, nil
 }
