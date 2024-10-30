@@ -72,7 +72,7 @@ func (rt *_router) GetFollowers(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 	response := map[string][]int{
-		"prayID": followers,
+		"Followed": followers,
 	}
 
 	w.Header().Set("content-type", "application/json")

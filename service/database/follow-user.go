@@ -10,8 +10,28 @@ type Follow struct {
 func (db *appdbimpl) FollowUser(OwnerID int, FollowedID int) (int, error) {
 
 	var exists bool
+	var ownerExists, followedExists bool
+
+	// Check if Owner exists in UserDB
+	checkOwnerQuery := `SELECT EXISTS(SELECT 1 FROM UserDB WHERE UserID = $1)`
+	err := db.c.QueryRow(checkOwnerQuery, OwnerID).Scan(&ownerExists)
+	if err != nil {
+		return 0, fmt.Errorf("failed to check owner existence: %w", err)
+	}
+
+	// Check if Pray exists in UserDB
+	checkPrayQuery := `SELECT EXISTS(SELECT 1 FROM UserDB WHERE UserID = $2)`
+	err = db.c.QueryRow(checkPrayQuery, FollowedID).Scan(&followedExists)
+	if err != nil {
+		return 0, fmt.Errorf("failed to check followed existence: %w", err)
+	}
+
+	if !ownerExists || !followedExists {
+		return 0, fmt.Errorf("one or both users do not exist")
+	}
+
 	checkQuery := `SELECT EXISTS(SELECT 1 FROM FollowDB WHERE OwnerID = $1 AND FollowedID = $2)`
-	err := db.c.QueryRow(checkQuery, OwnerID, FollowedID).Scan(&exists)
+	err = db.c.QueryRow(checkQuery, OwnerID, FollowedID).Scan(&exists)
 	if err != nil {
 		return 0, fmt.Errorf("failed to check follow existence: %w", err)
 	}
