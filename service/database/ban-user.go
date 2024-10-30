@@ -31,17 +31,6 @@ func (db *appdbimpl) BanUser(OwnerID int, PrayID int) (int, error) {
 		return 0, fmt.Errorf("one or both users do not exist")
 	}
 
-	// // check if owner and pray exist in db
-	// checkQuery1 := `SELECT EXISTS(SELECT 1 FROM UserDB WHERE UserID = $1) AND EXISTS(SELECT 1 FROM UserDB WHERE UserID = $2)`
-	// err := db.c.QueryRow(checkQuery1, OwnerID, PrayID).Scan(&exists)
-	// if err != nil {
-	// 	return 0, fmt.Errorf("failed to check user existence: %w", err)
-	// }
-
-	// if !exists {
-	// 	return 0, fmt.Errorf("user does not exist")
-	// }
-
 	checkQuery := `SELECT EXISTS(SELECT 1 FROM BanDB WHERE OwnerID = $1 AND PrayID = $2)`
 	err = db.c.QueryRow(checkQuery, OwnerID, PrayID).Scan(&exists)
 	if err != nil {
@@ -69,6 +58,18 @@ func (db *appdbimpl) BanUser(OwnerID int, PrayID int) (int, error) {
 }
 
 func (db *appdbimpl) GetBannedUsers(ownerID int) ([]int, error) {
+	var ownerExists bool
+	// Check if Owner exists in UserDB
+	checkOwnerQuery := `SELECT EXISTS(SELECT 1 FROM UserDB WHERE UserID = $1)`
+	err := db.c.QueryRow(checkOwnerQuery, ownerID).Scan(&ownerExists)
+	if err != nil {
+		return nil, fmt.Errorf("failed to check owner existence: %w", err)
+	}
+
+	if !ownerExists {
+		return nil, fmt.Errorf("one or both users do not exist")
+	}
+
 	rows, err := db.c.Query("SELECT prayID FROM BanDB WHERE ownerID = $1", ownerID)
 	if err != nil {
 		return nil, err
