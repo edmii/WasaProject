@@ -10,18 +10,37 @@ type Banned struct {
 }
 
 func (db *appdbimpl) BanUser(OwnerID int, PrayID int) (int, error) {
+	var ownerExists, prayExists bool
 	var exists bool
 
-	// check if owner and pray exist in db
-	checkQuery1 := `SELECT EXISTS(SELECT 1 FROM UserDB WHERE UserID = $1) AND EXISTS(SELECT 1 FROM UserDB WHERE UserID = $2)`
-	err := db.c.QueryRow(checkQuery1, OwnerID, PrayID).Scan(&exists)
+	// Check if Owner exists in UserDB
+	checkOwnerQuery := `SELECT EXISTS(SELECT 1 FROM UserDB WHERE UserID = $1)`
+	err := db.c.QueryRow(checkOwnerQuery, OwnerID).Scan(&ownerExists)
 	if err != nil {
-		return 0, fmt.Errorf("failed to check user existence: %w", err)
+		return 0, fmt.Errorf("failed to check owner existence: %w", err)
 	}
 
-	if !exists {
-		return 0, fmt.Errorf("user does not exist")
+	// Check if Pray exists in UserDB
+	checkPrayQuery := `SELECT EXISTS(SELECT 1 FROM UserDB WHERE UserID = $2)`
+	err = db.c.QueryRow(checkPrayQuery, PrayID).Scan(&prayExists)
+	if err != nil {
+		return 0, fmt.Errorf("failed to check pray existence: %w", err)
 	}
+
+	if !ownerExists || !prayExists {
+		return 0, fmt.Errorf("one or both users do not exist")
+	}
+
+	// // check if owner and pray exist in db
+	// checkQuery1 := `SELECT EXISTS(SELECT 1 FROM UserDB WHERE UserID = $1) AND EXISTS(SELECT 1 FROM UserDB WHERE UserID = $2)`
+	// err := db.c.QueryRow(checkQuery1, OwnerID, PrayID).Scan(&exists)
+	// if err != nil {
+	// 	return 0, fmt.Errorf("failed to check user existence: %w", err)
+	// }
+
+	// if !exists {
+	// 	return 0, fmt.Errorf("user does not exist")
+	// }
 
 	checkQuery := `SELECT EXISTS(SELECT 1 FROM BanDB WHERE OwnerID = $1 AND PrayID = $2)`
 	err = db.c.QueryRow(checkQuery, OwnerID, PrayID).Scan(&exists)
