@@ -55,7 +55,8 @@ func (rt *_router) BanUser(w http.ResponseWriter, r *http.Request, ps httprouter
 
 func (rt *_router) GetBans(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var ban Ban
-	err := json.NewDecoder(r.Body).Decode(&ban.OwnerID)
+
+	err := json.NewDecoder(r.Body).Decode(&ban)
 	if err != nil {
 		ctx.Logger.Info("Failed to decode request body ", err.Error())
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
