@@ -48,6 +48,7 @@ type AppDatabase interface {
 	CommentPost(PostID int, OwnerID int, Content string) error
 	BanUser(OwnerID int, PrayID int) (int, error)
 	FollowUser(OwnerID int, FollowedID int) (int, error)
+	GetBannedUsersByOwner(ownerID int) ([]Banned, error)
 
 	// FollowUser(ownerID int, followedID int) error
 	// UnfollowUser(ownerID int, followedID int) error

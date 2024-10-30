@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
@@ -49,33 +50,29 @@ func (rt *_router) BanUser(w http.ResponseWriter, r *http.Request, ps httprouter
 		_, _ = w.Write([]byte("User banned!"))
 	}
 
-	// ownerIdstr := ps.ByName("ownerID")
+}
 
-	// if ownerIdstr == "" {
-	// 	http.Error(w, "missing ownerID", http.StatusBadRequest)
-	// 	return
-	// }
+func (rt *_router) GetBans(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	ownerIDStr := ps.ByName("ownerID")
+	ownerID, err := strconv.Atoi(ownerIDStr)
+	if err != nil || ownerID <= 0 {
+		http.Error(w, "Invalid OwnerID", http.StatusBadRequest)
+		return
+	}
 
-	// ownerID, err := strconv.Atoi(ownerIdstr)
-	// if err != nil {
-	// 	ctx.Logger.Info("Failed to convert OwnerID in int", err.Error())
-	// 	http.Error(w, "ownerID not an int", http.StatusBadRequest)
-	// 	return
-	// }
+	// Get the list of banned users from the database for the given OwnerID
+	bannedUsers, err := rt.db.GetBannedUsersByOwner(ownerID)
+	if err != nil {
+		ctx.Logger.Info("Failed to retrieve banned users", err.Error())
+		http.Error(w, "Failed to retrieve banned users", http.StatusInternalServerError)
+		return
+	}
 
-	// prayIDStr := ps.ByName("prayID")
-
-	// if prayIDStr == "" {
-	// 	ctx.Logger.Info("Failed to get prayID", err.Error())
-	// 	http.Error(w, "missing prayID", http.StatusBadRequest)
-	// 	return
-	// }
-
-	// prayID, err := strconv.Atoi(prayIDStr)
-	// if err != nil {
-	// 	ctx.Logger.Info("Failed to convert prayID in int", err.Error())
-	// 	http.Error(w, "prayID not an int", http.StatusBadRequest)
-	// 	return
-	// }
-
+	// Convert the list to JSON and send the response
+	w.Header().Set("content-type", "application/json")
+	if err := json.NewEncoder(w).Encode(bannedUsers); err != nil {
+		ctx.Logger.Info("Failed to encode banned users to JSON", err.Error())
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
+	}
 }

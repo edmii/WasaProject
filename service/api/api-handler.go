@@ -8,11 +8,14 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/", rt.getHelloWorld)
 	rt.router.GET("/feed", rt.getFeed)
 
+	// rt.router.POST("/login", rt.wrap(rt.Login))
+
 	rt.router.GET("/db/:table", rt.wrap(rt.getDB))
 	rt.router.GET("/DESTROYDB/sure", rt.wrap(rt.DestroyDB))
 
 	rt.router.GET("/createuser", rt.wrap(rt.CreateUser))
 	rt.router.GET("/banuser", rt.wrap(rt.BanUser))
+	rt.router.GET("/getbans/:ownerID", rt.wrap(rt.GetBans))
 	rt.router.GET("/followuser", rt.wrap(rt.FollowUser))
 
 	rt.router.POST("/createpost", rt.wrap(rt.CreatePost))

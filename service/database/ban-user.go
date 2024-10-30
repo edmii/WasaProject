@@ -1,6 +1,14 @@
 package database
 
-import "fmt"
+import (
+	"fmt"
+)
+
+type Banned struct {
+	OwnerID int `json:"ownerID"`
+	// list of banned users:
+	PrayID int `json:"prayID"`
+}
 
 func (db *appdbimpl) BanUser(OwnerID int, PrayID int) (int, error) {
 	var exists bool
@@ -28,4 +36,27 @@ func (db *appdbimpl) BanUser(OwnerID int, PrayID int) (int, error) {
 		return 2, nil
 	}
 
+}
+
+func (db *appdbimpl) GetBannedUsersByOwner(ownerID int) ([]Banned, error) {
+	rows, err := db.c.Query("SELECT ownerID, prayID FROM BanDB WHERE owner_id = $1")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var bannedUsers []Banned
+	for rows.Next() {
+		var user Banned
+		if err := rows.Scan(&user.OwnerID, &user.PrayID); err != nil {
+			return nil, err
+		}
+		bannedUsers = append(bannedUsers, user)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return bannedUsers, nil
 }
