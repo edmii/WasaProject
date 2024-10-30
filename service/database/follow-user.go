@@ -19,7 +19,7 @@ func (db *appdbimpl) FollowUser(OwnerID int, FollowedID int) (int, error) {
 		return 0, fmt.Errorf("failed to check owner existence: %w", err)
 	}
 
-	// Check if Pray exists in UserDB
+	// Check if Followed exists in UserDB
 	checkPrayQuery := `SELECT EXISTS(SELECT 1 FROM UserDB WHERE UserID = $2)`
 	err = db.c.QueryRow(checkPrayQuery, FollowedID).Scan(&followedExists)
 	if err != nil {
