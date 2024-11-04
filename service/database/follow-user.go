@@ -77,3 +77,26 @@ func (db *appdbimpl) GetFollowed(ownerID int) ([]int, error) {
 
 	return followers, nil
 }
+
+func (db *appdbimpl) GetFollowers(ownerID int) ([]int, error) {
+	rows, err := db.c.Query("SELECT ownerID FROM FollowDB WHERE followedID = $1", ownerID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var followers []int
+	for rows.Next() {
+		var user int
+		if err := rows.Scan(&user); err != nil {
+			return nil, err
+		}
+		followers = append(followers, user)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return followers, nil
+}

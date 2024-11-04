@@ -20,6 +20,7 @@ func (rt *_router) Handler() http.Handler {
 
 	rt.router.POST("/followuser", rt.wrap(rt.FollowUser))
 	rt.router.GET("/getfollowed", rt.wrap(rt.GetFollowed))
+	rt.router.GET("/getfollowers", rt.wrap(rt.GetFollowers))
 
 	rt.router.POST("/createpost", rt.wrap(rt.CreatePost))
 	rt.router.POST("/likepost", rt.wrap(rt.LikePost))

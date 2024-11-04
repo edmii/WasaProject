@@ -50,6 +50,7 @@ type AppDatabase interface {
 	FollowUser(OwnerID int, FollowedID int) (int, error)
 	GetBannedUsers(ownerID int) ([]int, error)
 	GetFollowed(ownerID int) ([]int, error)
+	GetFollowers(ownerID int) ([]int, error)
 
 	// FollowUser(ownerID int, followedID int) error
 	// UnfollowUser(ownerID int, followedID int) error
