@@ -3,15 +3,17 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
 	"github.com/julienschmidt/httprouter"
 )
 
 type Comment struct {
-	Content string `json:"content"`
-	PostID  int    `json:"postID"`
-	OwnerID int    `json:"ownerID"`
+	Content string    `json:"content"`
+	PostID  int       `json:"postID"`
+	OwnerID int       `json:"ownerID"`
+	Created time.Time `json:"created"`
 }
 
 func (rt *_router) CommentPost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -21,6 +23,8 @@ func (rt *_router) CommentPost(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	var comment Comment
+
+	comment.Created = time.Now()
 
 	err := json.NewDecoder(r.Body).Decode(&comment)
 	if err != nil {
@@ -34,7 +38,17 @@ func (rt *_router) CommentPost(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	err = rt.db.CommentPost(comment.PostID, comment.OwnerID, comment.Content)
+	if comment.PostID <= 0 {
+		http.Error(w, "invalid post ID", http.StatusBadRequest)
+		return
+	}
+
+	if comment.OwnerID <= 0 {
+		http.Error(w, "invalid ownerID", http.StatusBadRequest)
+		return
+	}
+
+	err = rt.db.CommentPost(comment.PostID, comment.OwnerID, comment.Content, comment.Created)
 	if err != nil {
 		ctx.Logger.Info("Failed to comment post", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

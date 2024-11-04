@@ -34,6 +34,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 )
 
 // AppDatabase is the high level interface for the DB
@@ -48,7 +49,7 @@ type AppDatabase interface {
 	LikePost(PostID int, OwnerID int) (int, error)
 	GetLikes(ownerID int) ([]int, error)
 
-	CommentPost(PostID int, OwnerID int, Content string) error
+	CommentPost(PostID int, OwnerID int, Content string, CreatedAt time.Time) error
 
 	BanUser(OwnerID int, PrayID int) (int, error)
 	GetBannedUsers(ownerID int) ([]int, error)
@@ -145,6 +146,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 				OwnerID INT NOT NULL,
 				PhotoID INT NOT NULL,
 				Content VarChar(255) NOT NULL,
+				CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID),
 				FOREIGN KEY (PhotoID) REFERENCES PostDB(PostID)
 			);`
