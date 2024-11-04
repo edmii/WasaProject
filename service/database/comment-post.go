@@ -35,7 +35,7 @@ func (db *appdbimpl) GetComments(PostID int) ([]Comment, error) {
 	var comments []Comment
 	for rows.Next() {
 		var comment Comment
-		if err := rows.Scan(&comment.ID, &comment.PostID, &comment.OwnerID, &comment.Content, &comment.CreatedAt); err != nil {
+		if err := rows.Scan(&comment.ID, &comment.OwnerID, &comment.PostID, &comment.Content, &comment.CreatedAt); err != nil {
 			return nil, err
 		}
 		comments = append(comments, comment)
