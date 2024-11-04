@@ -30,3 +30,26 @@ func (db *appdbimpl) LikePost(PostID int, OwnerID int) (int, error) {
 	}
 
 }
+
+func (db *appdbimpl) GetLikes(PostID int) ([]int, error) {
+	rows, err := db.c.Query("SELECT OwnerID FROM LikesDB WHERE LikedPhotoID = $1", PostID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var likes []int
+	for rows.Next() {
+		var user int
+		if err := rows.Scan(&user); err != nil {
+			return nil, err
+		}
+		likes = append(likes, user)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return likes, nil
+}

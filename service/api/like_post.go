@@ -50,3 +50,34 @@ func (rt *_router) LikePost(w http.ResponseWriter, r *http.Request, ps httproute
 	}
 
 }
+
+func (rt *_router) GetLikes(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	var like Like
+
+	err := json.NewDecoder(r.Body).Decode(&like)
+	if err != nil {
+		ctx.Logger.Info("Failed to decode request body ", err.Error())
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if like.PostID <= 0 {
+		http.Error(w, "invalid post ID", http.StatusBadRequest)
+		return
+	}
+
+	likes, err := rt.db.GetLikes(like.PostID)
+	if err != nil {
+		ctx.Logger.Info("Failed to get likes", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("content-type", "application/json")
+	err = json.NewEncoder(w).Encode(likes)
+	if err != nil {
+		ctx.Logger.Info("Failed to encode likes", err.Error())
+		http.Error(w, "Failed to encode likes", http.StatusInternalServerError)
+		return
+	}
+}
