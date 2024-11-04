@@ -50,6 +50,7 @@ type AppDatabase interface {
 	GetLikes(ownerID int) ([]int, error)
 
 	CommentPost(PostID int, OwnerID int, Content string, CreatedAt time.Time) error
+	GetComments(PostID int) ([]Comment, error)
 
 	BanUser(OwnerID int, PrayID int) (int, error)
 	GetBannedUsers(ownerID int) ([]int, error)

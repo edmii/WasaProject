@@ -58,31 +58,30 @@ func (rt *_router) CommentPost(w http.ResponseWriter, r *http.Request, ps httpro
 	w.Header().Set("content-type", "text/plain")
 	_, _ = w.Write([]byte("Post commented!"))
 
-	// postIDstr := ps.ByName("postID")
-	// if postIDstr == "" {
-	// 	http.Error(w, "missing postID", http.StatusBadRequest)
-	// 	return
-	// }
+}
 
-	// postID, err := strconv.Atoi(postIDstr)
-	// if err != nil {
-	// 	ctx.Logger.Info("Failed to convert postID in int ", err.Error())
-	// 	http.Error(w, "postID not an int", http.StatusBadRequest)
-	// 	return
-	// }
+func (rt *_router) GetComments(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	var comment Comment
 
-	// ownerIDStr := ps.ByName("ownerID")
+	err := json.NewDecoder(r.Body).Decode(&comment)
+	if err != nil {
+		ctx.Logger.Info("Failed to decode request body ", err.Error())
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
 
-	// if ownerIDStr == "" {
-	// 	http.Error(w, "missing ownerID", http.StatusBadRequest)
-	// 	return
-	// }
+	if comment.PostID <= 0 {
+		http.Error(w, "invalid post ID", http.StatusBadRequest)
+		return
+	}
 
-	// ownerID, err := strconv.Atoi(ownerIDStr)
-	// if err != nil {
-	// 	ctx.Logger.Info("Failed to convert ownerID in int ", err.Error())
-	// 	http.Error(w, "ownerID not an int", http.StatusBadRequest)
-	// 	return
-	// }
+	comments, err := rt.db.GetComments(comment.PostID)
+	if err != nil {
+		ctx.Logger.Info("Failed to get comments", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
+	w.Header().Set("content-type", "application/json")
+	_ = json.NewEncoder(w).Encode(comments)
 }

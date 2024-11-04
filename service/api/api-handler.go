@@ -27,6 +27,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/getlikes", rt.wrap(rt.GetLikes))
 
 	rt.router.POST("/commentpost", rt.wrap(rt.CommentPost))
+	rt.router.GET("/getcomments", rt.wrap(rt.GetComments))
 
 	// Special routes
 	rt.router.GET("/liveness", rt.liveness)
