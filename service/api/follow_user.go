@@ -65,7 +65,7 @@ func (rt *_router) GetFollowers(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	followers, err := rt.db.GetFollowers(follow.OwnerID)
+	followers, err := rt.db.GetFollowed(follow.OwnerID)
 	if err != nil {
 		ctx.Logger.Info("Failed to get followers", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

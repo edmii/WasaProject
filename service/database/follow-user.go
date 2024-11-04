@@ -55,7 +55,7 @@ func (db *appdbimpl) FollowUser(OwnerID int, FollowedID int) (int, error) {
 	}
 }
 
-func (db *appdbimpl) GetFollowers(ownerID int) ([]int, error) {
+func (db *appdbimpl) GetFollowed(ownerID int) ([]int, error) {
 	rows, err := db.c.Query("SELECT followedID FROM FollowDB WHERE ownerID = $1", ownerID)
 	if err != nil {
 		return nil, err
