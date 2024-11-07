@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,9 +12,12 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-// type Post struct {
-// 	OwnerID int `json:"ownerID"`
-// }
+type Post struct {
+	PostID    int    `json:"postID"`
+	OwnerID   int    `json:"ownerID"`
+	ImagePath string `json:"imagePath"`
+	PostedAt  string `json:"postedAt"`
+}
 
 func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
@@ -99,4 +103,31 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 
 	w.Header().Set("content-type", "text/plain")
 	_, _ = w.Write([]byte("Post created"))
+}
+
+func (rt *_router) GetUserPosts(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	var post Post
+
+	err := json.NewDecoder(r.Body).Decode(&post)
+	if err != nil {
+		ctx.Logger.Info("Failed to decode request body ", err.Error())
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	posts, err := rt.db.GetUserPosts(post.OwnerID)
+	if err != nil {
+		ctx.Logger.Info("Failed to get posts", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("content-type", "application/json")
+	err = json.NewEncoder(w).Encode(posts)
+	if err != nil {
+		ctx.Logger.Info("Failed to encode posts", err.Error())
+		http.Error(w, "Failed to encode posts", http.StatusInternalServerError)
+		return
+	}
+
 }

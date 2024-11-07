@@ -42,9 +42,13 @@ type AppDatabase interface {
 	GetName() (string, error)
 	SetName(name string) error
 	GetDatabaseTableContent(tableName string) ([]map[string]interface{}, error)
-	CreateUser(username string) error
 	DestroyDB() error
+
+	CreateUser(username string) error
+	GetUserID(username string) (int, error)
+
 	CreatePost(ownerID int, directory string) error
+	GetUserPosts(userID int) ([]Post, error)
 
 	LikePost(PostID int, OwnerID int) (int, error)
 	GetLikes(ownerID int) ([]int, error)
@@ -82,7 +86,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 	createTableSQL := `
 			CREATE TABLE IF NOT EXISTS UserDB (
 				UserID INTEGER NOT NULL PRIMARY KEY,
-				Username VARCHAR(255) NOT NULL
+				Username VARCHAR(255) NOT NULL UNIQUE
 			);`
 
 	_, err := db.Exec(createTableSQL)
@@ -121,6 +125,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 				PostID INTEGER NOT NULL PRIMARY KEY,
 				Directory STRING NOT NULL,
 				OwnerID INT NOT NULL,
+				PostedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 				FOREIGN KEY (OwnerID) REFERENCES UserDB(UserID)
 			);`
 	_, err = db.Exec(createTableSQL6)

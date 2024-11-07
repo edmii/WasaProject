@@ -23,6 +23,8 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/getfollowers", rt.wrap(rt.GetFollowers))
 
 	rt.router.POST("/createpost", rt.wrap(rt.CreatePost))
+	rt.router.GET("/getuserposts", rt.wrap(rt.GetUserPosts))
+
 	rt.router.POST("/likepost", rt.wrap(rt.LikePost))
 	rt.router.GET("/getlikes", rt.wrap(rt.GetLikes))
 

@@ -26,3 +26,15 @@ func (db *appdbimpl) CreateUser(username string) error {
 
 	return nil
 }
+
+func (db *appdbimpl) GetUserID(username string) (int, error) {
+	// Prepare the query to get the user ID
+	selectQuery := "SELECT UserID FROM UserDB WHERE Username = $1"
+	var userID int
+	err := db.c.QueryRow(selectQuery, username).Scan(&userID)
+	if err != nil {
+		return 0, err
+	}
+
+	return userID, nil
+}
