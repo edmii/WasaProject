@@ -3,7 +3,7 @@ package database
 type Post struct {
 	PostID    int    `json:"postID"`
 	OwnerID   int    `json:"ownerID"`
-	ImagePath string `json:"imagePath"`
+	Directory string `json:"imagePath"`
 	PostedAt  string `json:"postedAt"`
 }
 
@@ -33,7 +33,7 @@ func (db *appdbimpl) GetUserPosts(username string) ([]Post, error) {
 	var posts []Post
 	for rows.Next() {
 		var post Post
-		if err := rows.Scan(&post.PostID, &post.OwnerID, &post.ImagePath, &post.PostedAt); err != nil {
+		if err := rows.Scan(&post.PostID, &post.OwnerID, &post.Directory, &post.PostedAt); err != nil {
 			return nil, err
 		}
 		posts = append(posts, post)

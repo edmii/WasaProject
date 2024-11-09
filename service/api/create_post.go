@@ -12,12 +12,12 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-type Post struct {
-	PostID    int    `json:"postID"`
-	OwnerID   int    `json:"ownerID"`
-	ImagePath string `json:"imagePath"`
-	PostedAt  string `json:"postedAt"`
-}
+// type Post struct {
+// 	PostID    int    `json:"postID"`
+// 	OwnerID   int    `json:"ownerID"`
+// 	Directory string `json:"imagePath"`
+// 	PostedAt  string `json:"postedAt"`
+// }
 
 func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
