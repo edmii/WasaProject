@@ -46,6 +46,7 @@ type AppDatabase interface {
 
 	CreateUser(username string) error
 	GetUserID(username string) (int, error)
+	GetUsername(userID int) string
 
 	CreatePost(ownerID int, directory string) error
 	GetUserPosts(username string) ([]Post, error)

@@ -33,7 +33,8 @@ func (rt *_router) getFeed(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	for _, follower := range followers {
-		posts, err := rt.db.GetUserPosts(follower)
+		username := rt.db.GetUsername(follower)
+		posts, err := rt.db.GetUserPosts(username)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
