@@ -106,16 +106,16 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 }
 
 func (rt *_router) GetUserPosts(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	var post Post
+	var user User
 
-	err := json.NewDecoder(r.Body).Decode(&post)
+	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		ctx.Logger.Info("Failed to decode request body ", err.Error())
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}
 
-	posts, err := rt.db.GetUserPosts(post.OwnerID)
+	posts, err := rt.db.GetUserPosts(user.Username)
 	if err != nil {
 		ctx.Logger.Info("Failed to get posts", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -20,10 +20,10 @@ func (db *appdbimpl) CreatePost(ownerID int, directory string) error {
 	return nil
 }
 
-func (db *appdbimpl) GetUserPosts(userID int) ([]Post, error) {
+func (db *appdbimpl) GetUserPosts(username string) ([]Post, error) {
 
 	//("SELECT UserID FROM UserDB WHERE Username = $1", username)
-	rows, err := db.c.Query("SELECT * FROM PostDB WHERE OwnerID = (SELECT UserID FROM UserDB WHERE Username = $1)", userID)
+	rows, err := db.c.Query("SELECT * FROM PostDB WHERE OwnerID = (SELECT UserID FROM UserDB WHERE Username = $1)", username)
 	if err != nil {
 		return nil, err
 	}
