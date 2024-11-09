@@ -33,7 +33,7 @@ func (db *appdbimpl) GetUserPosts(username string) ([]Post, error) {
 	var posts []Post
 	for rows.Next() {
 		var post Post
-		if err := rows.Scan(&post.PostID, &post.OwnerID, &post.Directory, &post.PostedAt); err != nil {
+		if err := rows.Scan(&post.PostID, &post.Directory, &post.OwnerID, &post.PostedAt); err != nil {
 			return nil, err
 		}
 		posts = append(posts, post)
