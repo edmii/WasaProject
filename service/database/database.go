@@ -83,6 +83,12 @@ func New(db *sql.DB) (AppDatabase, error) {
 		return nil, errors.New("database is required when building a AppDatabase")
 	}
 
+	// Enable foreign key constraints for SQLite
+	_, err := db.Exec("PRAGMA foreign_keys = ON;")
+	if err != nil {
+		return nil, fmt.Errorf("failed to enable foreign keys: %w", err)
+	}
+
 	// Create the User table
 	createTableSQL := `
 			CREATE TABLE IF NOT EXISTS UserDB (
@@ -90,7 +96,7 @@ func New(db *sql.DB) (AppDatabase, error) {
 				Username VARCHAR(255) NOT NULL UNIQUE
 			);`
 
-	_, err := db.Exec(createTableSQL)
+	_, err = db.Exec(createTableSQL)
 	if err != nil {
 		return nil, fmt.Errorf("error creating database structure: %w", err)
 	}
