@@ -48,7 +48,8 @@ type AppDatabase interface {
 	GetUserID(username string) (int, error)
 	GetUsername(userID int) string
 
-	CreatePost(ownerID int, directory string) error
+	CreatePost(ownerID int, directory string, PostedAt time.Time) (int, error)
+	DeletePost(postID int) error
 	GetUserPosts(username string) ([]Post, error)
 
 	LikePost(PostID int, OwnerID int) (int, error)

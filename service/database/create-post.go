@@ -1,5 +1,10 @@
 package database
 
+import (
+	"fmt"
+	"time"
+)
+
 type Post struct {
 	PostID    int    `json:"postID"`
 	OwnerID   int    `json:"ownerID"`
@@ -7,16 +12,46 @@ type Post struct {
 	PostedAt  string `json:"postedAt"`
 }
 
-func (db *appdbimpl) CreatePost(ownerID int, directory string) error {
+func (db *appdbimpl) CreatePost(ownerID int, directory string, postedAt time.Time) (int, error) {
+	// Step 1: Insert into the PostDB and get the PostID using RETURNING
+	insertQuery := "INSERT INTO PostDB (OwnerID, Directory, PostedAt) VALUES ($1, $2, $3) RETURNING PostID"
 
-	insertQuery := "INSERT INTO PostDB (OwnerID, Directory) VALUES ($1, $2)"
-
-	_, err := db.c.Exec(insertQuery, ownerID, directory)
-
+	var postID int
+	err := db.c.QueryRow(insertQuery, ownerID, directory, postedAt).Scan(&postID)
 	if err != nil {
-		return err
+		return 0, fmt.Errorf("failed to create post: %w", err)
 	}
 
+	// Step 2: Modify the Directory to append the PostID
+	updatedDirectory := fmt.Sprintf("%s_%d", directory, postID)
+
+	// Step 3: Update the PostDB record with the new Directory value
+	updateQuery := "UPDATE PostDB SET Directory = $1 WHERE PostID = $2"
+	_, err = db.c.Exec(updateQuery, updatedDirectory, postID)
+	if err != nil {
+		return 0, fmt.Errorf("failed to update post directory: %w", err)
+	}
+
+	// Return the PostID
+	return postID, nil
+
+	// insertQuery := "INSERT INTO PostDB (OwnerID, Directory, PostedAt) VALUES ($1, $2, $3)"
+
+	// _, err := db.c.Exec(insertQuery, ownerID, directory, postedAt)
+
+	// if err != nil {
+	// 	return err
+	// }
+
+	// return nil
+}
+
+func (db *appdbimpl) DeletePost(postID int) error {
+	deleteQuery := "DELETE FROM PostDB WHERE PostID = $1"
+	_, err := db.c.Exec(deleteQuery, postID)
+	if err != nil {
+		return fmt.Errorf("failed to delete post: %w", err)
+	}
 	return nil
 }
 
