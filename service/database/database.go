@@ -49,13 +49,14 @@ type AppDatabase interface {
 	GetUsername(userID int) string
 
 	CreatePost(ownerID int, directory string, PostedAt time.Time) (int, error)
-	DeletePost(postID int) error
+	DeletePost(postID int, requesterID int) error
 	GetUserPosts(username string) ([]Post, error)
 
 	LikePost(PostID int, OwnerID int) (int, error)
 	GetLikes(ownerID int) ([]int, error)
 
 	CommentPost(PostID int, OwnerID int, Content string, CreatedAt time.Time) error
+	DeleteComment(CommentID int, OwnerID int, PostID int) error
 	GetComments(PostID int) ([]Comment, error)
 
 	BanUser(OwnerID int, PrayID int) (int, error)

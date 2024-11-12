@@ -46,9 +46,18 @@ func (db *appdbimpl) CreatePost(ownerID int, directory string, postedAt time.Tim
 	// return nil
 }
 
-func (db *appdbimpl) DeletePost(postID int) error {
-	deleteQuery := "DELETE FROM PostDB WHERE PostID = $1"
-	_, err := db.c.Exec(deleteQuery, postID)
+func (db *appdbimpl) DeletePost(postID int, requesterID int) error {
+	if requesterID <= 0 {
+		deleteQuery := "DELETE FROM PostDB WHERE PostID = $1"
+		_, err := db.c.Exec(deleteQuery, postID)
+		if err != nil {
+			return fmt.Errorf("failed to delete post: %w", err)
+		}
+		return nil
+	}
+
+	deleteQuery := "DELETE FROM PostDB WHERE PostID = $1 AND OwnerID = $2"
+	_, err := db.c.Exec(deleteQuery, postID, requesterID)
 	if err != nil {
 		return fmt.Errorf("failed to delete post: %w", err)
 	}

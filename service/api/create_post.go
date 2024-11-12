@@ -19,6 +19,8 @@ type Post struct {
 	OwnerID   int    `json:"ownerID"`
 	Directory string `json:"imagePath"`
 	PostedAt  string `json:"postedAt"`
+
+	RequesterID int `json:"requesterID"`
 }
 
 func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
@@ -93,7 +95,7 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 		ctx.Logger.Info("Failed create file from request", err.Error())
 		http.Error(w, "Failed to create file", http.StatusInternalServerError)
 
-		err = rt.db.DeletePost(PostID)
+		err = rt.db.DeletePost(PostID, -1)
 		if err != nil {
 			ctx.Logger.Info("Failed to delete post", err.Error())
 			http.Error(w, "Failed to delete post", http.StatusInternalServerError)
@@ -108,7 +110,7 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 	if err != nil {
 		ctx.Logger.Info("Failed to save file", err.Error())
 		http.Error(w, "Failed to save file", http.StatusInternalServerError)
-		err = rt.db.DeletePost(PostID)
+		err = rt.db.DeletePost(PostID, -1)
 		if err != nil {
 			ctx.Logger.Info("Failed to delete post", err.Error())
 			http.Error(w, "Failed to delete post", http.StatusInternalServerError)
@@ -139,7 +141,12 @@ func (rt *_router) DeletePost(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	err = rt.db.DeletePost(post.PostID)
+	if post.RequesterID <= 0 {
+		http.Error(w, "invalid requester ID", http.StatusBadRequest)
+		return
+	}
+
+	err = rt.db.DeletePost(post.PostID, post.RequesterID)
 	if err != nil {
 		ctx.Logger.Info("Failed to delete post", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
