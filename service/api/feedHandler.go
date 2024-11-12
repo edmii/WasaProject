@@ -44,6 +44,7 @@ func (rt *_router) getFeed(w http.ResponseWriter, r *http.Request, ps httprouter
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+
 		_, _ = w.Write(encoded)
 	}
 
