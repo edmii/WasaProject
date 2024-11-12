@@ -25,10 +25,11 @@ func (db *appdbimpl) CommentPost(PostID int, OwnerID int, Content string, Create
 
 }
 
-func (db *appdbimpl) DeleteComment(CommentID int, OwnerID int, PostID int) error {
+func (db *appdbimpl) DeleteComment(CommentID int, RequesterID int, PostID int) error {
 	//execute query only if wonerID is the same as the ownerID of the comment or the ownerID of the post
-	query := "DELETE FROM CommentDB WHERE CommentID = $1 AND (OwnerID = $2 OR OwnerID = (SELECT OwnerID FROM PostDB WHERE PostID = $3))"
-	_, err := db.c.Exec(query, CommentID, OwnerID, PostID)
+	query := "DELETE FROM CommentDB WHERE CommentID = $1 AND (OwnerID = $2 OR EXISTS (SELECT 1 FROM PostDB WHERE PostID = $3 AND OwnerID = $2))"
+
+	_, err := db.c.Exec(query, CommentID, RequesterID, PostID)
 	if err != nil {
 		return fmt.Errorf("failed to delete comment: %w", err)
 	}
