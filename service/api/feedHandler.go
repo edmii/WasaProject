@@ -32,6 +32,8 @@ func (rt *_router) getFeed(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
+	// var posts []Post
+
 	for _, follower := range followers {
 		username := rt.db.GetUsername(follower)
 		posts, err := rt.db.GetUserPosts(username)
@@ -45,9 +47,10 @@ func (rt *_router) getFeed(w http.ResponseWriter, r *http.Request, ps httprouter
 			return
 		}
 
+		w.Header().Set("content-type", "text/plain")
 		_, _ = w.Write(encoded)
 	}
 
-	w.Header().Set("content-type", "text/plain")
-	_, _ = w.Write([]byte("Hello World!"))
+	// w.Header().Set("content-type", "text/plain")
+	// _, _ = w.Write([]byte("Hello World!"))
 }
