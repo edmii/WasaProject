@@ -7,14 +7,14 @@ import (
 	// "strconv"
 
 	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
+	_ "github.com/edmii/WasaProject/service/models/structs.go"
 	"github.com/julienschmidt/httprouter"
-	"github.com\edmii\WasaProject\service\models\structs.go"
 )
 
-type Ban struct {
-	OwnerID int `json:"ownerID"`
-	PrayID  int `json:"prayID"`
-}
+// type Ban struct {
+// 	OwnerID int `json:"ownerID"`
+// 	PrayID  int `json:"prayID"`
+// }
 
 func (rt *_router) BanUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
