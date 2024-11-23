@@ -4,8 +4,14 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
 	"github.com/julienschmidt/httprouter"
 )
+
+type FeedResponse struct {
+	Username string          `json:"username"`
+	Posts    []database.Post `json:"posts"`
+}
 
 func (rt *_router) getFeed(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var user User
@@ -32,7 +38,9 @@ func (rt *_router) getFeed(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	// var posts []Post
+	followers = append(followers, userID)
+
+	var allPosts []database.Post
 
 	for _, follower := range followers {
 		username := rt.db.GetUsername(follower)
@@ -41,16 +49,24 @@ func (rt *_router) getFeed(w http.ResponseWriter, r *http.Request, ps httprouter
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		encoded, err := json.Marshal(posts)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
 
-		w.Header().Set("content-type", "text/plain")
-		_, _ = w.Write(encoded)
+		allPosts = append(allPosts, posts...)
 	}
 
-	// w.Header().Set("content-type", "text/plain")
-	// _, _ = w.Write([]byte("Hello World!"))
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 	return
+	// }
+
+	response := FeedResponse{
+		Posts: allPosts,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+		return
+	}
+
 }

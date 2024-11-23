@@ -10,6 +10,8 @@ type Post struct {
 	OwnerID   int    `json:"ownerID"`
 	Directory string `json:"imagePath"`
 	PostedAt  string `json:"postedAt"`
+
+	RequesterID int `json:"requesterID"`
 }
 
 func (db *appdbimpl) CreatePost(ownerID int, directory string, postedAt time.Time) (int, error) {
