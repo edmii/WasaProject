@@ -71,7 +71,7 @@ func (db *appdbimpl) DeletePost(postID int, requesterID int) error {
 func (db *appdbimpl) GetUserPosts(username string) ([]structs.Post, error) {
 
 	//("SELECT UserID FROM UserDB WHERE Username = $1", username)
-	rows, err := db.c.Query("SELECT * FROM PostDB WHERE OwnerID = (SELECT UserID FROM UserDB WHERE Username = $1)", username)
+	rows, err := db.c.Query("SELECT * FROM PostDB WHERE OwnerID = (SELECT UserID FROM UserDB WHERE Username = $1) ORDER BY PostedAt DESC", username)
 	if err != nil {
 		return nil, err
 	}
