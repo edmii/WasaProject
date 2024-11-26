@@ -4,17 +4,17 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/edmii/WasaProject/service/database"
+	structs "github.com/edmii/WasaProject/service/models"
 	"github.com/julienschmidt/httprouter"
 )
 
-type FeedResponse struct {
-	Username string          `json:"username"`
-	Posts    []database.Post `json:"posts"`
-}
+// type FeedResponse struct {
+// 	Username string          `json:"username"`
+// 	Posts    []database.Post `json:"posts"`
+// }
 
 func (rt *_router) getFeed(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	var user User
+	var user structs.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -40,7 +40,7 @@ func (rt *_router) getFeed(w http.ResponseWriter, r *http.Request, ps httprouter
 
 	followers = append(followers, userID)
 
-	var allPosts []database.Post
+	var allPosts []structs.Post
 
 	for _, follower := range followers {
 		username := rt.db.GetUsername(follower)
@@ -58,7 +58,7 @@ func (rt *_router) getFeed(w http.ResponseWriter, r *http.Request, ps httprouter
 	// 	return
 	// }
 
-	response := FeedResponse{
+	response := structs.FeedResponse{
 		Posts: allPosts,
 	}
 

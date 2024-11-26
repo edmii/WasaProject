@@ -5,16 +5,17 @@ import (
 	"net/http"
 
 	"github.com/edmii/WasaProject/service/api/reqcontext"
+	structs "github.com/edmii/WasaProject/service/models"
 	"github.com/julienschmidt/httprouter"
 )
 
-type User struct {
-	Username string `json:"username"`
-}
+// type User struct {
+// 	Username string `json:"username"`
+// }
 
 func (rt *_router) CreateUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
-	var user User
+	var user structs.User
 
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {

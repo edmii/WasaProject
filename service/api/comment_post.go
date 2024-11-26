@@ -6,18 +6,19 @@ import (
 	"time"
 
 	"github.com/edmii/WasaProject/service/api/reqcontext"
+	structs "github.com/edmii/WasaProject/service/models"
 	"github.com/julienschmidt/httprouter"
 )
 
-type Comment struct {
-	CommentID int       `json:"commentID"`
-	Content   string    `json:"content"`
-	PostID    int       `json:"postID"`
-	OwnerID   int       `json:"ownerID"`
-	CreatedAt time.Time `json:"createdAt"`
+// type Comment struct {
+// 	CommentID int       `json:"commentID"`
+// 	Content   string    `json:"content"`
+// 	PostID    int       `json:"postID"`
+// 	OwnerID   int       `json:"ownerID"`
+// 	CreatedAt time.Time `json:"createdAt"`
 
-	RequesterID int `json:"requesterID"`
-}
+// 	RequesterID int `json:"requesterID"`
+// }
 
 func (rt *_router) CommentPost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	if r.Method != "POST" {
@@ -25,7 +26,7 @@ func (rt *_router) CommentPost(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	var comment Comment
+	var comment structs.Comment
 
 	comment.CreatedAt = time.Now()
 
@@ -69,7 +70,7 @@ func (rt *_router) DeleteComment(w http.ResponseWriter, r *http.Request, ps http
 		return
 	}
 
-	var comment Comment
+	var comment structs.Comment
 
 	err := json.NewDecoder(r.Body).Decode(&comment)
 	if err != nil {
@@ -95,7 +96,7 @@ func (rt *_router) DeleteComment(w http.ResponseWriter, r *http.Request, ps http
 }
 
 func (rt *_router) GetComments(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	var comment Comment
+	var comment structs.Comment
 
 	err := json.NewDecoder(r.Body).Decode(&comment)
 	if err != nil {

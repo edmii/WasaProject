@@ -11,17 +11,18 @@ import (
 	"time"
 
 	"github.com/edmii/WasaProject/service/api/reqcontext"
+	structs "github.com/edmii/WasaProject/service/models"
 	"github.com/julienschmidt/httprouter"
 )
 
-type Post struct {
-	PostID    int    `json:"postID"`
-	OwnerID   int    `json:"ownerID"`
-	Directory string `json:"imagePath"`
-	PostedAt  string `json:"postedAt"`
+// type Post struct {
+// 	PostID    int    `json:"postID"`
+// 	OwnerID   int    `json:"ownerID"`
+// 	Directory string `json:"imagePath"`
+// 	PostedAt  string `json:"postedAt"`
 
-	RequesterID int `json:"requesterID"`
-}
+// 	RequesterID int `json:"requesterID"`
+// }
 
 func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
@@ -133,7 +134,7 @@ func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprou
 }
 
 func (rt *_router) DeletePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	var post Post
+	var post structs.Post
 	err := json.NewDecoder(r.Body).Decode(&post)
 	if err != nil {
 		ctx.Logger.Info("Failed to decode request body ", err.Error())
@@ -158,7 +159,7 @@ func (rt *_router) DeletePost(w http.ResponseWriter, r *http.Request, ps httprou
 }
 
 func (rt *_router) GetUserPosts(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	var user User
+	var user structs.User
 
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {

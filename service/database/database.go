@@ -35,6 +35,8 @@ import (
 	"errors"
 	"fmt"
 	"time"
+
+	structs "github.com/edmii/WasaProject/service/models"
 )
 
 // AppDatabase is the high level interface for the DB
@@ -50,14 +52,14 @@ type AppDatabase interface {
 
 	CreatePost(ownerID int, directory string, PostedAt time.Time) (int, error)
 	DeletePost(postID int, requesterID int) error
-	GetUserPosts(username string) ([]Post, error)
+	GetUserPosts(username string) ([]structs.Post, error)
 
 	LikePost(PostID int, OwnerID int) (int, error)
 	GetLikes(ownerID int) ([]int, error)
 
 	CommentPost(PostID int, OwnerID int, Content string, CreatedAt time.Time) error
 	DeleteComment(CommentID int, OwnerID int, PostID int) error
-	GetComments(PostID int) ([]Comment, error)
+	GetComments(PostID int) ([]structs.Comment, error)
 
 	BanUser(OwnerID int, PrayID int) (int, error)
 	GetBannedUsers(ownerID int) ([]int, error)

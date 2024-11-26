@@ -3,15 +3,19 @@ package database
 import (
 	"fmt"
 	"time"
+
+	structs "github.com/edmii/WasaProject/service/models"
 )
 
-type Comment struct {
-	ID        int       `json:"id"`
-	PostID    int       `json:"postID"`
-	OwnerID   int       `json:"ownerID"`
-	Content   string    `json:"content"`
-	CreatedAt time.Time `json:"created"`
-}
+// type Comment struct {
+// 	CommentID int       `json:"commentID"`
+// 	Content   string    `json:"content"`
+// 	PostID    int       `json:"postID"`
+// 	OwnerID   int       `json:"ownerID"`
+// 	CreatedAt time.Time `json:"createdAt"`
+
+// 	RequesterID int `json:"requesterID"`
+// }
 
 func (db *appdbimpl) CommentPost(PostID int, OwnerID int, Content string, CreatedAt time.Time) error {
 	query := "INSERT INTO CommentDB (PhotoID, OwnerID, Content, CreatedAt) VALUES ($1, $2, $3, $4)"
@@ -36,17 +40,17 @@ func (db *appdbimpl) DeleteComment(CommentID int, RequesterID int, PostID int) e
 	return nil
 }
 
-func (db *appdbimpl) GetComments(PostID int) ([]Comment, error) {
+func (db *appdbimpl) GetComments(PostID int) ([]structs.Comment, error) {
 	rows, err := db.c.Query("SELECT * FROM CommentDB WHERE PhotoID = $1", PostID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get comments: %w", err)
 	}
 	defer rows.Close()
 
-	var comments []Comment
+	var comments []structs.Comment
 	for rows.Next() {
-		var comment Comment
-		if err := rows.Scan(&comment.ID, &comment.OwnerID, &comment.PostID, &comment.Content, &comment.CreatedAt); err != nil {
+		var comment structs.Comment
+		if err := rows.Scan(&comment.CommentID, &comment.OwnerID, &comment.PostID, &comment.Content, &comment.CreatedAt); err != nil {
 			return nil, err
 		}
 		comments = append(comments, comment)

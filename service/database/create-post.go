@@ -3,16 +3,18 @@ package database
 import (
 	"fmt"
 	"time"
+
+	structs "github.com/edmii/WasaProject/service/models"
 )
 
-type Post struct {
-	PostID    int    `json:"postID"`
-	OwnerID   int    `json:"ownerID"`
-	Directory string `json:"imagePath"`
-	PostedAt  string `json:"postedAt"`
+// type Post struct {
+// 	PostID    int    `json:"postID"`
+// 	OwnerID   int    `json:"ownerID"`
+// 	Directory string `json:"imagePath"`
+// 	PostedAt  string `json:"postedAt"`
 
-	RequesterID int `json:"requesterID"`
-}
+// 	RequesterID int `json:"requesterID"`
+// }
 
 func (db *appdbimpl) CreatePost(ownerID int, directory string, postedAt time.Time) (int, error) {
 	// Step 1: Insert into the PostDB and get the PostID using RETURNING
@@ -66,7 +68,7 @@ func (db *appdbimpl) DeletePost(postID int, requesterID int) error {
 	return nil
 }
 
-func (db *appdbimpl) GetUserPosts(username string) ([]Post, error) {
+func (db *appdbimpl) GetUserPosts(username string) ([]structs.Post, error) {
 
 	//("SELECT UserID FROM UserDB WHERE Username = $1", username)
 	rows, err := db.c.Query("SELECT * FROM PostDB WHERE OwnerID = (SELECT UserID FROM UserDB WHERE Username = $1)", username)
@@ -76,9 +78,9 @@ func (db *appdbimpl) GetUserPosts(username string) ([]Post, error) {
 	defer rows.Close()
 
 	//return a slice of json, with all info about the post
-	var posts []Post
+	var posts []structs.Post
 	for rows.Next() {
-		var post Post
+		var post structs.Post
 		if err := rows.Scan(&post.PostID, &post.Directory, &post.OwnerID, &post.PostedAt); err != nil {
 			return nil, err
 		}
