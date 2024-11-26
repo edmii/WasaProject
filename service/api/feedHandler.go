@@ -59,7 +59,8 @@ func (rt *_router) getFeed(w http.ResponseWriter, r *http.Request, ps httprouter
 	// }
 
 	response := structs.FeedResponse{
-		Posts: allPosts,
+		Username: user.Username,
+		Posts:    allPosts,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
