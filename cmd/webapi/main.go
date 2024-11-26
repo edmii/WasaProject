@@ -34,10 +34,10 @@ import (
 	"os/signal"
 	"syscall"
 
-	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api"
-	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
-	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/globaltime"
 	"github.com/ardanlabs/conf"
+	"github.com/edmii/WasaProject/service/api"
+	"github.com/edmii/WasaProject/service/database"
+	"github.com/edmii/WasaProject/service/globaltime"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/sirupsen/logrus"
 )
