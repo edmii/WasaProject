@@ -2,10 +2,10 @@ package database
 
 import "fmt"
 
-type Follow struct {
-	OwnerID    int `json:"ownerID"`
-	FollowedID int `json:"followedID"`
-}
+// type Follow struct {
+// 	OwnerID    int `json:"ownerID"`
+// 	FollowedID int `json:"followedID"`
+// }
 
 func (db *appdbimpl) FollowUser(OwnerID int, FollowedID int) (int, error) {
 

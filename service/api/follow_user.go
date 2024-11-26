@@ -5,17 +5,18 @@ import (
 	"net/http"
 
 	"github.com/edmii/WasaProject/service/api/reqcontext"
+	structs "github.com/edmii/WasaProject/service/models"
 	"github.com/julienschmidt/httprouter"
 )
 
-type Follow struct {
-	FollowedID int `json:"followedID"`
-	OwnerID    int `json:"ownerID"`
-}
+// type Follow struct {
+// 	FollowedID int `json:"followedID"`
+// 	OwnerID    int `json:"ownerID"`
+// }
 
 func (rt *_router) FollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
-	var follow Follow
+	var follow structs.Follow
 
 	err := json.NewDecoder(r.Body).Decode(&follow)
 	if err != nil {
@@ -51,7 +52,7 @@ func (rt *_router) FollowUser(w http.ResponseWriter, r *http.Request, ps httprou
 }
 
 func (rt *_router) GetFollowed(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	var follow Follow
+	var follow structs.Follow
 
 	err := json.NewDecoder(r.Body).Decode(&follow)
 	if err != nil {
@@ -85,7 +86,7 @@ func (rt *_router) GetFollowed(w http.ResponseWriter, r *http.Request, ps httpro
 }
 
 func (rt *_router) GetFollowers(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	var follow Follow
+	var follow structs.Follow
 
 	err := json.NewDecoder(r.Body).Decode(&follow)
 	if err != nil {

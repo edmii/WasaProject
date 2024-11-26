@@ -5,17 +5,18 @@ import (
 	"net/http"
 
 	"github.com/edmii/WasaProject/service/api/reqcontext"
+	structs "github.com/edmii/WasaProject/service/models"
 	"github.com/julienschmidt/httprouter"
 )
 
-type Like struct {
-	PostID  int `json:"postID"`
-	OwnerID int `json:"ownerID"`
-}
+// type Like struct {
+// 	PostID  int `json:"postID"`
+// 	OwnerID int `json:"ownerID"`
+// }
 
 func (rt *_router) LikePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
-	var like Like
+	var like structs.Like
 
 	err := json.NewDecoder(r.Body).Decode(&like)
 	if err != nil {
@@ -52,7 +53,7 @@ func (rt *_router) LikePost(w http.ResponseWriter, r *http.Request, ps httproute
 }
 
 func (rt *_router) GetLikes(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	var like Like
+	var like structs.Like
 
 	err := json.NewDecoder(r.Body).Decode(&like)
 	if err != nil {

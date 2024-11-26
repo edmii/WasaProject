@@ -4,10 +4,10 @@ import (
 	"fmt"
 )
 
-type Banned struct {
-	OwnerID int `json:"ownerID"`
-	PrayID  int `json:"prayID"`
-}
+// type Banned struct {
+// 	OwnerID int `json:"ownerID"`
+// 	PrayID  int `json:"prayID"`
+// }
 
 func (db *appdbimpl) BanUser(OwnerID int, PrayID int) (int, error) {
 	var ownerExists, prayExists bool
