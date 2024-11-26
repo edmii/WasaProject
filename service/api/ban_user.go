@@ -6,8 +6,8 @@ import (
 
 	// "strconv"
 
-	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/api/reqcontext"
-	_ "github.com/edmii/WasaProject/service/models/structs.go"
+	"github.com/edmii/WasaProject/service/api/reqcontext"
+	structs "github.com/edmii/WasaProject/service/models"
 	"github.com/julienschmidt/httprouter"
 )
 
@@ -18,7 +18,7 @@ import (
 
 func (rt *_router) BanUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 
-	var ban Ban
+	var ban structs.Ban
 
 	err := json.NewDecoder(r.Body).Decode(&ban)
 	if err != nil {
@@ -55,7 +55,7 @@ func (rt *_router) BanUser(w http.ResponseWriter, r *http.Request, ps httprouter
 }
 
 func (rt *_router) GetBans(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-	var ban Ban
+	var ban structs.Ban
 
 	err := json.NewDecoder(r.Body).Decode(&ban)
 	if err != nil {

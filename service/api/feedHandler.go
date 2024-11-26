@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated/service/database"
+	"github.com/edmii/WasaProject/service/database"
 	"github.com/julienschmidt/httprouter"
 )
 

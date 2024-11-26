@@ -1,5 +1,5 @@
-module git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated
-
+// module git.sapienzaapps.it/fantasticcoffee/fantastic-coffee-decaffeinated
+module github.com/edmii/WasaProject
 go 1.17
 
 require (
