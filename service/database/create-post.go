@@ -1,6 +1,7 @@
 package database
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -60,13 +61,69 @@ func (db *appdbimpl) DeletePost(postID int, requesterID int) error {
 		return nil
 	}
 
-	deleteQuery := "DELETE FROM PostDB WHERE PostID = $1 AND OwnerID = $2"
-	_, err := db.c.Exec(deleteQuery, postID, requesterID)
+	// First, verify if the requester is the owner of the post
+	var ownerID int
+	query := "SELECT OwnerID FROM PostDB WHERE PostID = $1"
+	err := db.c.QueryRow(query, postID).Scan(&ownerID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return fmt.Errorf("post not found")
+		}
+		return fmt.Errorf("failed to verify post ownership: %w", err)
+	}
+
+	if requesterID != ownerID {
+		return fmt.Errorf("unauthorized action: requester is not the owner of the post")
+	}
+
+	// Begin a transaction
+	tx, err := db.c.Begin()
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+
+	// Defer rollback to ensure any error rolls back transaction
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+		}
+	}()
+
+	deletePostQuery := "DELETE FROM PostDB WHERE PostID = $1"
+	_, err = tx.Exec(deletePostQuery, postID)
 	if err != nil {
 		return fmt.Errorf("failed to delete post: %w", err)
 	}
+
+	// Query to delete likes related to the post
+	deleteLikesQuery := "DELETE FROM LikesDB WHERE PostID = $1"
+	_, err = tx.Exec(deleteLikesQuery, postID)
+	if err != nil {
+		return fmt.Errorf("failed to delete likes: %w", err)
+	}
+
+	// Query to delete comments related to the post
+	deleteCommentsQuery := "DELETE FROM CommentsDB WHERE PostID = $1"
+	_, err = tx.Exec(deleteCommentsQuery, postID)
+	if err != nil {
+		return fmt.Errorf("failed to delete comments: %w", err)
+	}
+
+	// Commit the transaction if all operations succeed
+	if err = tx.Commit(); err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
 	return nil
 }
+
+// deleteQuery := "DELETE FROM PostDB WHERE PostID = $1 AND OwnerID = $2"
+// _, err := db.c.Exec(deleteQuery, postID, requesterID)
+// if err != nil {
+// 	return fmt.Errorf("failed to delete post: %w", err)
+// }
+// return nil
+// }
 
 func (db *appdbimpl) GetUserPosts(username string) ([]structs.Post, error) {
 
@@ -89,7 +146,11 @@ func (db *appdbimpl) GetUserPosts(username string) ([]structs.Post, error) {
 		if err != nil {
 			return nil, err
 		}
-		// 	// Set the likes count for the post
+		commentsCount, err := db.GetCommentsCount(post.PostID)
+		if err != nil {
+			return nil, err
+		}
+		post.CommentsCount = commentsCount
 		post.LikesCount = likesCount
 		posts = append(posts, post)
 	}
