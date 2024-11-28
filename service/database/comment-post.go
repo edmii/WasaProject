@@ -40,8 +40,8 @@ func (db *appdbimpl) DeleteComment(CommentID int, RequesterID int, PostID int) e
 	return nil
 }
 
-func (db *appdbimpl) GetComments(PostID int) ([]structs.Comment, error) {
-	rows, err := db.c.Query("SELECT * FROM CommentDB WHERE PhotoID = $1", PostID)
+func (db *appdbimpl) GetComments(postID int) ([]structs.Comment, error) {
+	rows, err := db.c.Query("SELECT * FROM CommentDB WHERE PhotoID = $1", postID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get comments: %w", err)
 	}
@@ -61,4 +61,18 @@ func (db *appdbimpl) GetComments(PostID int) ([]structs.Comment, error) {
 	}
 
 	return comments, nil
+}
+
+func (db *appdbimpl) GetCommentsCount(postID int) (int, error) {
+	row := db.c.QueryRow("SELECT COUNT(*) FROM CommentDB WHERE PhotoID = $1", postID)
+
+	// Variable to store the count result
+	var count int
+	// Scan the result into the count variable
+	if err := row.Scan(&count); err != nil {
+		return 0, err
+	}
+
+	// Return the count
+	return count, nil
 }

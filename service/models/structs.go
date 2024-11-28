@@ -24,10 +24,12 @@ type Ban struct {
 }
 
 type Post struct {
-	PostID    int    `json:"postID"`
-	OwnerID   int    `json:"ownerID"`
-	Directory string `json:"imagePath"`
-	PostedAt  string `json:"postedAt"`
+	PostID        int    `json:"postID"`
+	OwnerID       int    `json:"ownerID"`
+	Directory     string `json:"imagePath"`
+	PostedAt      string `json:"postedAt"`
+	LikesCount    int    `json:"likesCount"`
+	CommentsCount int    `json:"commentsCount"`
 
 	RequesterID int `json:"requesterID"`
 }
@@ -45,4 +47,12 @@ type Comment struct {
 	CreatedAt time.Time `json:"createdAt"`
 
 	RequesterID int `json:"requesterID"`
+}
+
+type ProfilePage struct {
+	Username      int    `json:"userID"`
+	FollowerCount int    `json:"followerCount"`
+	FollowedCount int    `json:"followedCount"`
+	Posts         []Post `json:"posts"`
+	PostsCount    int    `json:"postsCount"`
 }

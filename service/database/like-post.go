@@ -53,3 +53,17 @@ func (db *appdbimpl) GetLikes(PostID int) ([]int, error) {
 
 	return likes, nil
 }
+
+func (db *appdbimpl) GetLikesCount(postID int) (int, error) {
+	row := db.c.QueryRow("SELECT COUNT(*) FROM LikesDB WHERE LikedPhotoID = $1", postID)
+
+	// Variable to store the count result
+	var count int
+	// Scan the result into the count variable
+	if err := row.Scan(&count); err != nil {
+		return 0, err
+	}
+
+	// Return the count
+	return count, nil
+}

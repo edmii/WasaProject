@@ -53,13 +53,16 @@ type AppDatabase interface {
 	CreatePost(ownerID int, directory string, PostedAt time.Time) (int, error)
 	DeletePost(postID int, requesterID int) error
 	GetUserPosts(username string) ([]structs.Post, error)
+	GetPostsCount(userID int) (int, error)
 
 	LikePost(PostID int, OwnerID int) (int, error)
 	GetLikes(ownerID int) ([]int, error)
+	GetLikesCount(postID int) (int, error)
 
 	CommentPost(PostID int, OwnerID int, Content string, CreatedAt time.Time) error
 	DeleteComment(CommentID int, OwnerID int, PostID int) error
-	GetComments(PostID int) ([]structs.Comment, error)
+	GetComments(postID int) ([]structs.Comment, error)
+	GetCommentsCount(postID int) (int, error)
 
 	BanUser(OwnerID int, PrayID int) (int, error)
 	GetBannedUsers(ownerID int) ([]int, error)

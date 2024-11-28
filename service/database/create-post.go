@@ -84,6 +84,13 @@ func (db *appdbimpl) GetUserPosts(username string) ([]structs.Post, error) {
 		if err := rows.Scan(&post.PostID, &post.Directory, &post.OwnerID, &post.PostedAt); err != nil {
 			return nil, err
 		}
+
+		likesCount, err := db.GetLikesCount(post.PostID)
+		if err != nil {
+			return nil, err
+		}
+		// 	// Set the likes count for the post
+		post.LikesCount = likesCount
 		posts = append(posts, post)
 	}
 
@@ -93,4 +100,18 @@ func (db *appdbimpl) GetUserPosts(username string) ([]structs.Post, error) {
 
 	return posts, nil
 
+}
+
+func (db *appdbimpl) GetPostsCount(userID int) (int, error) {
+	row := db.c.QueryRow("SELECT COUNT(*) FROM PostDB WHERE OwnerID = $1", userID)
+
+	// Variable to store the count result
+	var count int
+	// Scan the result into the count variable
+	if err := row.Scan(&count); err != nil {
+		return 0, err
+	}
+
+	// Return the count
+	return count, nil
 }
