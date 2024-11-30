@@ -7,6 +7,7 @@ func (rt *_router) Handler() http.Handler {
 	// Register routes
 	rt.router.GET("/", rt.getHelloWorld)
 	rt.router.GET("/feed", rt.getFeed)
+	rt.router.GET("/profile", rt.getProfile)
 
 	// rt.router.POST("/login", rt.wrap(rt.Login))
 
