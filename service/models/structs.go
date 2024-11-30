@@ -11,6 +11,7 @@ type FeedResponse struct {
 
 type User struct {
 	Username string `json:"username"`
+	ID       int    `json:"ID"`
 }
 
 type Follow struct {

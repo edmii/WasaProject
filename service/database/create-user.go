@@ -50,3 +50,15 @@ func (db *appdbimpl) GetUsername(userID int) string {
 
 	return username
 }
+
+func (db *appdbimpl) ChangeUsername(userID int, newUsername string) error {
+	updateQuery := "UPDATE UserDB SET Username = $1 WHERE UserID = $2"
+
+	// Execute the update query with the provided new username and user ID
+	_, err := db.c.Exec(updateQuery, newUsername, userID)
+	if err != nil {
+		return fmt.Errorf("failed to update username: %w", err)
+	}
+
+	return nil
+}

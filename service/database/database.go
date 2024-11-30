@@ -49,6 +49,7 @@ type AppDatabase interface {
 	CreateUser(username string) error
 	GetUserID(username string) (int, error)
 	GetUsername(userID int) string
+	ChangeUsername(userID int, username string) error
 
 	CreatePost(ownerID int, directory string, PostedAt time.Time) (int, error)
 	DeletePost(postID int, requesterID int) error
