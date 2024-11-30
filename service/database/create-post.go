@@ -96,14 +96,14 @@ func (db *appdbimpl) DeletePost(postID int, requesterID int) error {
 	}
 
 	// Query to delete likes related to the post
-	deleteLikesQuery := "DELETE FROM LikesDB WHERE PostID = $1"
+	deleteLikesQuery := "DELETE FROM LikesDB WHERE LikedPhotoID = $1"
 	_, err = tx.Exec(deleteLikesQuery, postID)
 	if err != nil {
 		return fmt.Errorf("failed to delete likes: %w", err)
 	}
 
 	// Query to delete comments related to the post
-	deleteCommentsQuery := "DELETE FROM CommentsDB WHERE PostID = $1"
+	deleteCommentsQuery := "DELETE FROM CommentsDB WHERE PhotoID = $1"
 	_, err = tx.Exec(deleteCommentsQuery, postID)
 	if err != nil {
 		return fmt.Errorf("failed to delete comments: %w", err)

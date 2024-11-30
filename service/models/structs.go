@@ -50,7 +50,7 @@ type Comment struct {
 }
 
 type ProfilePage struct {
-	Username      int    `json:"userID"`
+	Username      string `json:"username"`
 	FollowerCount int    `json:"followerCount"`
 	FollowedCount int    `json:"followedCount"`
 	Posts         []Post `json:"posts"`

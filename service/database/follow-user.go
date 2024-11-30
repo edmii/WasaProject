@@ -100,3 +100,31 @@ func (db *appdbimpl) GetFollowers(ownerID int) ([]int, error) {
 
 	return followers, nil
 }
+
+func (db *appdbimpl) GetFollowersCount(ownerID int) (int, error) {
+	row := db.c.QueryRow("SELECT COUNT(*) FROM FollowDB WHERE FollowedID = $1", ownerID)
+
+	// Variable to store the count result
+	var count int
+	// Scan the result into the count variable
+	if err := row.Scan(&count); err != nil {
+		return 0, err
+	}
+
+	// Return the count
+	return count, nil
+}
+
+func (db *appdbimpl) GetFollowedCount(ownerID int) (int, error) {
+	row := db.c.QueryRow("SELECT COUNT(*) FROM FollowDB WHERE OwnerID = $1", ownerID)
+
+	// Variable to store the count result
+	var count int
+	// Scan the result into the count variable
+	if err := row.Scan(&count); err != nil {
+		return 0, err
+	}
+
+	// Return the count
+	return count, nil
+}
