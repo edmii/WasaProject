@@ -90,7 +90,7 @@ func (db *appdbimpl) BanUser(OwnerID int, PrayID int) (int, error) {
 
 		// Query to delete comments
 		deleteCommentsQuery := `
-        DELETE FROM CommentsDB
+        DELETE FROM CommentDB
         WHERE (OwnerID = $1 AND PhotoID IN (SELECT PostID FROM PostDB WHERE OwnerID = $2))
         OR (OwnerID = $2 AND PhotoID IN (SELECT PostID FROM PostDB WHERE OwnerID = $1));
     `
