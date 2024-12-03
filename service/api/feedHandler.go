@@ -86,6 +86,16 @@ func (rt *_router) getProfile(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
+	var user2ID int
+	banExists, err := rt.db.CheckBanStatus(userID, user2ID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	if banExists {
+		return
+	}
+
 	posts, err := rt.db.GetUserPosts(user.Username)
 
 	if err != nil {

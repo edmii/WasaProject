@@ -18,8 +18,22 @@ import (
 // }
 
 func (db *appdbimpl) CommentPost(PostID int, OwnerID int, Content string, CreatedAt time.Time) error {
+	var user2ID int
+
+	userQuery := "SELECT OwnerID from PostDB where PostID $1"
+	err := db.c.QueryRow(userQuery, PostID).Scan(&user2ID)
+	banExists, err := db.CheckBanStatus(OwnerID, user2ID)
+
+	if err != nil {
+		return 0, fmt.Errorf("failed to check ban existence: %w", err)
+	}
+
+	if banExists {
+		return 0, fmt.Errorf("request failed (user is banned)")
+	}
+
 	query := "INSERT INTO CommentDB (PhotoID, OwnerID, Content, CreatedAt) VALUES ($1, $2, $3, $4)"
-	_, err := db.c.Exec(query, PostID, OwnerID, Content, CreatedAt)
+	_, err = db.c.Exec(query, PostID, OwnerID, Content, CreatedAt)
 
 	if err != nil {
 		return fmt.Errorf("failed to comment post: %w", err)

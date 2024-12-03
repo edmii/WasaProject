@@ -3,10 +3,23 @@ package database
 import "fmt"
 
 func (db *appdbimpl) LikePost(PostID int, OwnerID int) (int, error) {
+	var user2ID int
+
+	userQuery := "SELECT OwnerID from PostDB where PostID $1"
+	err := db.c.QueryRow(userQuery, PostID).Scan(&user2ID)
+	banExists, err := db.CheckBanStatus(OwnerID, user2ID)
+
+	if err != nil {
+		return 0, fmt.Errorf("failed to check ban existence: %w", err)
+	}
+
+	if banExists {
+		return 0, fmt.Errorf("request failed (user is banned)")
+	}
 
 	var exists bool
 	checkQuery := `SELECT EXISTS(SELECT 1 FROM LikesDB WHERE LikedPhotoID = $1 AND Ownerid = $2)`
-	err := db.c.QueryRow(checkQuery, PostID, OwnerID).Scan(&exists)
+	err = db.c.QueryRow(checkQuery, PostID, OwnerID).Scan(&exists)
 	if err != nil {
 		return 0, fmt.Errorf("failed to check like existence: %w", err)
 	}
