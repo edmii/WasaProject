@@ -67,6 +67,7 @@ type AppDatabase interface {
 
 	BanUser(OwnerID int, PrayID int) (int, error)
 	GetBannedUsers(ownerID int) ([]int, error)
+	CheckBanStatus(UserID int, User2ID int) (bool, error)
 
 	FollowUser(OwnerID int, FollowedID int) (int, error)
 	GetFollowed(ownerID int) ([]int, error)

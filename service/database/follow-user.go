@@ -12,9 +12,19 @@ func (db *appdbimpl) FollowUser(OwnerID int, FollowedID int) (int, error) {
 	var exists bool
 	var ownerExists, followedExists bool
 
+	banExists, err := db.CheckBanStatus(OwnerID, FollowedID)
+
+	if err != nil {
+		return 0, fmt.Errorf("failed to check ban existence: %w", err)
+	}
+
+	if banExists {
+		return 0, fmt.Errorf("request failed (user is banned)")
+	}
+
 	// Check if Owner exists in UserDB
 	checkOwnerQuery := `SELECT EXISTS(SELECT 1 FROM UserDB WHERE UserID = $1)`
-	err := db.c.QueryRow(checkOwnerQuery, OwnerID).Scan(&ownerExists)
+	err = db.c.QueryRow(checkOwnerQuery, OwnerID).Scan(&ownerExists)
 	if err != nil {
 		return 0, fmt.Errorf("failed to check owner existence: %w", err)
 	}
