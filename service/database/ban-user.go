@@ -147,9 +147,9 @@ func (db *appdbimpl) GetBannedUsers(ownerID int) ([]int, error) {
 func (db *appdbimpl) CheckBanStatus(UserID int, User2ID int) (bool, error) {
 	var banExists bool
 	checkBanQuery := "SELECT EXISTS(SELECT 1 FROM BanDB WHERE (OwnerID = $1 AND PrayID = $2) OR (OwnerID = $2 AND PrayID = $1))"
-	err := db.c.QueryRow(checkBanQuery, UserID, User2ID).Scan(banExists)
+	err := db.c.QueryRow(checkBanQuery, UserID, User2ID).Scan(&banExists)
 	if err != nil {
-		return true, fmt.Errorf("failed to check ban existence: %w", err)
+		return true, err
 	}
 	if banExists {
 		return true, nil
