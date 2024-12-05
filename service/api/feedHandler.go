@@ -75,8 +75,15 @@ func (rt *_router) getProfile(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
+	//username of profile getting retrieved
 	if user.Username == "" {
 		http.Error(w, "missing username", http.StatusBadRequest)
+		return
+	}
+
+	//id of requester
+	if user.ID <= 0 {
+		http.Error(w, "invalid requester ID", http.StatusBadRequest)
 		return
 	}
 
@@ -86,8 +93,8 @@ func (rt *_router) getProfile(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	var user2ID int
-	banExists, err := rt.db.CheckBanStatus(userID, user2ID)
+	//check ban existance
+	banExists, err := rt.db.CheckBanStatus(userID, user.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

@@ -46,6 +46,7 @@ type AppDatabase interface {
 	GetDatabaseTableContent(tableName string) ([]map[string]interface{}, error)
 	DestroyDB() error
 
+	CheckUserExist(username string) (bool, error)
 	CreateUser(username string) error
 	GetUserID(username string) (int, error)
 	GetUsername(userID int) string

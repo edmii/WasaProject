@@ -14,7 +14,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.GET("/db/:table", rt.wrap(rt.getDB))
 	rt.router.GET("/DESTROYDB/sure", rt.wrap(rt.DestroyDB))
 
-	rt.router.POST("/createuser", rt.wrap(rt.CreateUser))
+	rt.router.POST("/login", rt.wrap(rt.Login))
 	rt.router.PUT("/changeusername", rt.wrap(rt.ChangeUsername))
 
 	rt.router.POST("/banuser", rt.wrap(rt.BanUser))

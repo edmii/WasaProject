@@ -13,10 +13,8 @@ import (
 // 	Username string `json:"username"`
 // }
 
-func (rt *_router) CreateUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
-
+func (rt *_router) Login(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var user structs.User
-
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		ctx.Logger.Info("Failed to decode request body ", err.Error())
@@ -29,15 +27,37 @@ func (rt *_router) CreateUser(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	err = rt.db.CreateUser(user.Username)
+	var exist bool
+	exist, err = rt.db.CheckUserExist(user.Username)
 	if err != nil {
-		ctx.Logger.Info("Failed to create user", err.Error())
+		ctx.Logger.Info("Failed to check user existance", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if !exist {
+		err = rt.db.CreateUser(user.Username)
+		if err != nil {
+			ctx.Logger.Info("Failed to create user", err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	Map := map[string]interface{}{
+		"msg":  "User logged in",
+		"user": user,
+	}
+
+	json, err := json.Marshal(Map)
+	if err != nil {
+		ctx.Logger.Info("Failed to marshal json", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("content-type", "text/plain")
-	_, _ = w.Write([]byte("User created"))
+	_, _ = w.Write(json)
 }
 
 func (rt *_router) ChangeUsername(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
