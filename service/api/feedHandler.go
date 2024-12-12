@@ -53,18 +53,24 @@ func (rt *_router) getFeed(w http.ResponseWriter, r *http.Request, ps httprouter
 		allPosts = append(allPosts, posts...)
 	}
 
-	response := structs.FeedResponse{
+	feed := structs.FeedResponse{
 		Username: user.Username,
 		Posts:    allPosts,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+
+	response := map[string]interface{}{
+		"status":  "success",
+		"message": "Feed retrieved",
+		"data":    feed,
+	}
+
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return
 	}
-
 }
 
 func (rt *_router) getProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
@@ -131,7 +137,7 @@ func (rt *_router) getProfile(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 	}
 
-	response := structs.ProfilePage{
+	profile := structs.ProfilePage{
 		Username:      user.Username,
 		FollowerCount: followerCount,
 		FollowedCount: followedCount,
@@ -140,6 +146,13 @@ func (rt *_router) getProfile(w http.ResponseWriter, r *http.Request, ps httprou
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+
+	response := map[string]interface{}{
+		"status":  "success",
+		"message": "Profile page retrieved",
+		"data":    profile,
+	}
+
 	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)

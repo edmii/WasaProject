@@ -94,7 +94,9 @@ func (rt *_router) GetFollowed(w http.ResponseWriter, r *http.Request, ps httpro
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	response := map[string][]int{
+	response := map[string]interface{}{
+		"status":   "success",
+		"message":  "Followed users retrieved",
 		"Followed": followers,
 	}
 
@@ -128,7 +130,9 @@ func (rt *_router) GetFollowers(w http.ResponseWriter, r *http.Request, ps httpr
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	response := map[string][]int{
+	response := map[string]interface{}{
+		"status":    "success",
+		"message":   "Following users retrieved",
 		"Followers": followers,
 	}
 

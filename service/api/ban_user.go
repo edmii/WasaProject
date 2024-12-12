@@ -77,13 +77,16 @@ func (rt *_router) GetBans(w http.ResponseWriter, r *http.Request, ps httprouter
 		return
 	}
 
-	response := map[string][]int{
-		"prayID": bannedUsers,
+	response := map[string]interface{}{
+		"status":  "success",
+		"message": "Banned users retrieved",
+		"data":    bannedUsers,
 	}
 
 	// Convert the list to JSON and send the response
 	w.Header().Set("content-type", "application/json")
-	if err := json.NewEncoder(w).Encode(response); err != nil {
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
 		ctx.Logger.Info("Failed to encode banned users to JSON", err.Error())
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return

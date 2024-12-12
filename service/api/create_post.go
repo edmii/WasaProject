@@ -176,7 +176,14 @@ func (rt *_router) GetUserPosts(w http.ResponseWriter, r *http.Request, ps httpr
 	}
 
 	w.Header().Set("content-type", "application/json")
-	err = json.NewEncoder(w).Encode(posts)
+
+	response := map[string]interface{}{
+		"status":  "success",
+		"message": "User posts retrieved",
+		"data":    posts,
+	}
+
+	err = json.NewEncoder(w).Encode(response)
 	if err != nil {
 		ctx.Logger.Info("Failed to encode posts", err.Error())
 		http.Error(w, "Failed to encode posts", http.StatusInternalServerError)

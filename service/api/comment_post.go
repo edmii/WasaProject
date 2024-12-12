@@ -59,8 +59,20 @@ func (rt *_router) CommentPost(w http.ResponseWriter, r *http.Request, ps httpro
 		return
 	}
 
-	w.Header().Set("content-type", "text/plain")
-	_, _ = w.Write([]byte("Post commented!"))
+	w.Header().Set("content-type", "application/json")
+
+	response := map[string]interface{}{
+		"status":  "success",
+		"message": "Comment posted",
+		"data":    comment,
+	}
+
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		ctx.Logger.Info("Failed to encode posts", err.Error())
+		http.Error(w, "Failed to encode posts", http.StatusInternalServerError)
+		return
+	}
 
 }
 
@@ -118,5 +130,17 @@ func (rt *_router) GetComments(w http.ResponseWriter, r *http.Request, ps httpro
 	}
 
 	w.Header().Set("content-type", "application/json")
-	_ = json.NewEncoder(w).Encode(comments)
+
+	response := map[string]interface{}{
+		"status":  "success",
+		"message": "User posts retrieved",
+		"data":    comments,
+	}
+
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		ctx.Logger.Info("Failed to encode posts", err.Error())
+		http.Error(w, "Failed to encode posts", http.StatusInternalServerError)
+		return
+	}
 }
