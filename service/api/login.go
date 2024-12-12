@@ -43,6 +43,13 @@ func (rt *_router) Login(w http.ResponseWriter, r *http.Request, ps httprouter.P
 			return
 		}
 		user.ID = id
+	} else {
+		id, err := rt.db.GetUserID(user.Username)
+		if err != nil {
+			ctx.Logger.Info("Failed to get user ID", err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		user.ID = id
 	}
 
 	Map := map[string]interface{}{
