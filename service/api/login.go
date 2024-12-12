@@ -52,19 +52,17 @@ func (rt *_router) Login(w http.ResponseWriter, r *http.Request, ps httprouter.P
 		user.ID = id
 	}
 
-	Map := map[string]interface{}{
-		"msg":  "User logged in",
-		"user": user,
-	}
-	json, err := json.Marshal(Map)
-	if err != nil {
-		ctx.Logger.Info("Failed to marshal json", err.Error())
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	w.Header().Set("content-type", "application/json")
 
-	w.Header().Set("content-type", "text/plain")
-	_, _ = w.Write(json)
+	response := map[string]interface{}{
+		"msg":  "User logged in",
+		"data": user,
+	}
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		ctx.Logger.Info("Failed to encode response", err.Error())
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
 }
 
 func (rt *_router) ChangeUsername(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {

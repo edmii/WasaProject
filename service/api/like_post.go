@@ -42,14 +42,35 @@ func (rt *_router) LikePost(w http.ResponseWriter, r *http.Request, ps httproute
 		return
 	}
 
-	w.Header().Set("content-type", "text/plain")
+	// Prepare the response
+	w.Header().Set("Content-Type", "application/json")
+
+	var response map[string]interface{}
+
 	switch result {
-	case 1:
-		_, _ = w.Write([]byte("Post Unliked!"))
-	case 2:
-		_, _ = w.Write([]byte("Post Liked!"))
+	case 1: // Post unliked
+		response = map[string]interface{}{
+			"status":  "success",
+			"message": "Post unliked",
+			"data":    like,
+		}
+	case 2: // Post liked
+		response = map[string]interface{}{
+			"status":  "success",
+			"message": "Post liked",
+			"data":    like,
+		}
+	default:
+		http.Error(w, "Unexpected result", http.StatusInternalServerError)
+		return
 	}
 
+	// Send the response
+	err = json.NewEncoder(w).Encode(response)
+	if err != nil {
+		ctx.Logger.Info("Failed to encode response", err.Error())
+		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+	}
 }
 
 func (rt *_router) GetLikes(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
