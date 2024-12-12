@@ -18,7 +18,7 @@ func (db *appdbimpl) CheckUserExist(username string) (bool, error) {
 
 func (db *appdbimpl) CreateUser(username string) (int, error) {
 	// Prepare the query to insert a new user and return the ID
-	insertQuery := "INSERT INTO UserDB (Username) VALUES ($1) RETURNING ID"
+	insertQuery := "INSERT INTO UserDB (Username) VALUES ($1) RETURNING UserID"
 	var userID int
 
 	// Execute the query and scan the returned ID
