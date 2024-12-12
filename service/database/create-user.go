@@ -16,15 +16,18 @@ func (db *appdbimpl) CheckUserExist(username string) (bool, error) {
 	return exist, nil
 }
 
-func (db *appdbimpl) CreateUser(username string) error {
-	// Prepare the query to insert a new user
-	insertQuery := "INSERT INTO UserDB (Username) VALUES ($1)"
-	_, err := db.c.Exec(insertQuery, username)
+func (db *appdbimpl) CreateUser(username string) (int, error) {
+	// Prepare the query to insert a new user and return the ID
+	insertQuery := "INSERT INTO UserDB (Username) VALUES ($1) RETURNING ID"
+	var userID int
+
+	// Execute the query and scan the returned ID
+	err := db.c.QueryRow(insertQuery, username).Scan(&userID)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	return userID, nil
 }
 
 func (db *appdbimpl) GetUserID(username string) (int, error) {

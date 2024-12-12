@@ -47,7 +47,7 @@ type AppDatabase interface {
 	DestroyDB() error
 
 	CheckUserExist(username string) (bool, error)
-	CreateUser(username string) error
+	CreateUser(username string) (int, error)
 	GetUserID(username string) (int, error)
 	GetUsername(userID int) string
 	ChangeUsername(userID int, username string) error

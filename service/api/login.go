@@ -36,12 +36,13 @@ func (rt *_router) Login(w http.ResponseWriter, r *http.Request, ps httprouter.P
 	}
 
 	if !exist {
-		err = rt.db.CreateUser(user.Username)
+		id, err := rt.db.CreateUser(user.Username)
 		if err != nil {
 			ctx.Logger.Info("Failed to create user", err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
+		user.ID = id
 	}
 
 	Map := map[string]interface{}{
