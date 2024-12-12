@@ -5,7 +5,7 @@ import "fmt"
 func (db *appdbimpl) LikePost(PostID int, OwnerID int) (int, error) {
 	var user2ID int
 
-	userQuery := "SELECT OwnerID from PostDB where PostID $1"
+	userQuery := "SELECT OwnerID from PostDB where PostID = $1"
 	err := db.c.QueryRow(userQuery, PostID).Scan(&user2ID)
 	if err != nil {
 		return 0, fmt.Errorf("failed to retrieve user posts: %w", err)
