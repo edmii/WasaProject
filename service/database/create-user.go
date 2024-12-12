@@ -7,7 +7,7 @@ import (
 func (db *appdbimpl) CheckUserExist(username string) (bool, error) {
 	var exist bool
 	// Prepare the query to check if the username already exists
-	checkQuery := "SELECT EXIST(SELECT * FROM UserDB WHERE Username = $1)"
+	checkQuery := "SELECT EXISTS (SELECT * FROM UserDB WHERE Username = $1)"
 	err := db.c.QueryRow(checkQuery, username).Scan(&exist)
 	if err != nil {
 		return false, err

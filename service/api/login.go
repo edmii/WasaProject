@@ -48,7 +48,6 @@ func (rt *_router) Login(w http.ResponseWriter, r *http.Request, ps httprouter.P
 		"msg":  "User logged in",
 		"user": user,
 	}
-
 	json, err := json.Marshal(Map)
 	if err != nil {
 		ctx.Logger.Info("Failed to marshal json", err.Error())
@@ -80,6 +79,17 @@ func (rt *_router) ChangeUsername(w http.ResponseWriter, r *http.Request, ps htt
 		return
 	}
 
+	Map := map[string]interface{}{
+		"msg":  "Username changed",
+		"user": user,
+	}
+	json, err := json.Marshal(Map)
+	if err != nil {
+		ctx.Logger.Info("Failed to marshal json", err.Error())
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("content-type", "text/plain")
-	_, _ = w.Write([]byte("Username changed"))
+	_, _ = w.Write(json)
 }
