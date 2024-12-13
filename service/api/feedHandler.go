@@ -13,43 +13,101 @@ import (
 // 	Posts    []database.Post `json:"posts"`
 // }
 
+// func (rt *_router) getFeed(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+// 	var user structs.User
+// 	err := json.NewDecoder(r.Body).Decode(&user)
+// 	if err != nil {
+// 		http.Error(w, "Invalid request body", http.StatusBadRequest)
+// 		return
+// 	}
+
+// 	if user.Username == "" {
+// 		http.Error(w, "missing username", http.StatusBadRequest)
+// 		return
+// 	}
+
+// 	userID, err := rt.db.GetUserID(user.Username)
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
+
+// 	followers, err := rt.db.GetFollowers(userID)
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
+
+// 	followers = append(followers, userID)
+
+// 	var allPosts []structs.Post
+
+// 	for _, follower := range followers {
+// 		username := rt.db.GetUsername(follower)
+// 		posts, err := rt.db.GetUserPosts(username)
+// 		if err != nil {
+// 			http.Error(w, err.Error(), http.StatusInternalServerError)
+// 			return
+// 		}
+
+// 		allPosts = append(allPosts, posts...)
+// 	}
+
+// 	feed := structs.FeedResponse{
+// 		Username: user.Username,
+// 		Posts:    allPosts,
+// 	}
+
+// 	w.Header().Set("Content-Type", "application/json")
+
+// 	response := map[string]interface{}{
+// 		"status":  "success",
+// 		"message": "Feed retrieved",
+// 		"data":    feed,
+// 	}
+
+// 	err = json.NewEncoder(w).Encode(response)
+// 	if err != nil {
+// 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
+// 		return
+// 	}
+// }
+
 func (rt *_router) getFeed(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var user structs.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		sendErrorResponse(w, "Invalid request body", []string{"Failed to decode JSON request body"}, http.StatusBadRequest)
 		return
 	}
 
 	if user.Username == "" {
-		http.Error(w, "missing username", http.StatusBadRequest)
+		sendErrorResponse(w, "Invalid request body", []string{"Missing username in request body"}, http.StatusBadRequest)
 		return
 	}
 
 	userID, err := rt.db.GetUserID(user.Username)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		sendErrorResponse(w, "Database error", []string{"Failed to retrieve user ID", err.Error()}, http.StatusInternalServerError)
 		return
 	}
 
 	followers, err := rt.db.GetFollowers(userID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		sendErrorResponse(w, "Database error", []string{"Failed to retrieve followers", err.Error()}, http.StatusInternalServerError)
 		return
 	}
 
 	followers = append(followers, userID)
 
 	var allPosts []structs.Post
-
 	for _, follower := range followers {
 		username := rt.db.GetUsername(follower)
 		posts, err := rt.db.GetUserPosts(username)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			sendErrorResponse(w, "Database error", []string{"Failed to retrieve posts for user", username, err.Error()}, http.StatusInternalServerError)
 			return
 		}
-
 		allPosts = append(allPosts, posts...)
 	}
 
@@ -59,17 +117,14 @@ func (rt *_router) getFeed(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-
 	response := map[string]interface{}{
 		"status":  "success",
 		"message": "Feed retrieved",
 		"data":    feed,
 	}
 
-	err = json.NewEncoder(w).Encode(response)
-	if err != nil {
-		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
-		return
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		sendErrorResponse(w, "Server error", []string{"Failed to encode response", err.Error()}, http.StatusInternalServerError)
 	}
 }
 
@@ -159,4 +214,17 @@ func (rt *_router) getProfile(w http.ResponseWriter, r *http.Request, ps httprou
 		return
 
 	}
+}
+
+func sendErrorResponse(w http.ResponseWriter, message string, details []string, statusCode int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+
+	response := structs.ErrorResponse{
+		Status:  "error",
+		Message: message,
+		Details: details,
+	}
+
+	_ = json.NewEncoder(w).Encode(response)
 }

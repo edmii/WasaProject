@@ -4,6 +4,12 @@ import (
 	"time"
 )
 
+type ErrorResponse struct {
+	Status  string   `json:"status"`
+	Message string   `json:"message"`
+	Details []string `json:"details,omitempty"`
+}
+
 type FeedResponse struct {
 	Username string `json:"username"`
 	Posts    []Post `json:"posts"`
