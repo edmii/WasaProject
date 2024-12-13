@@ -8,6 +8,37 @@ info:
 
 
 paths:
+
+  /login:
+    post:
+      summary: User Login
+      description: Logs in a user by checking their existence or creating a new user if they don't exist.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '400':
+          description: Invalid request or missing data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error while processing the login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /feed:
     get:
       summary: Get Feed
@@ -37,11 +68,518 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  
+  /profile:
+    get:
+      summary: Get Profile
+      description: Retrieves the profile information of a user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileRequest'
+      responses:
+        '200':
+          description: Profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        '400':
+          description: Invalid request or missing data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Access denied due to ban
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error while processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
+  /changeusername:
+    put:
+      summary: Change Username
+      description: Updates the username for an existing user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangeUsernameRequest'
+      responses:
+        '200':
+          description: Username changed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChangeUsernameResponse'
+        '400':
+          description: Invalid request or missing data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error while processing the username change
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /banuser:
+    post:
+      summary: Ban or Unban a User
+      description: Bans or unbans a user based on the provided IDs.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BanRequest'
+      responses:
+        '200':
+          description: Operation completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BanResponse'
+        '400':
+          description: Invalid request or missing data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error while processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /getbans:
+    get:
+      summary: Retrieve Banned Users
+      description: Retrieves a list of users banned by the given owner.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetBansRequest'
+      responses:
+        '200':
+          description: List of banned users retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetBansResponse'
+        '400':
+          description: Invalid request or missing data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error while retrieving the list of banned users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /db/{table}:
+    get:
+      summary: Get Database Table Content
+      description: Retrieves the content of a specified database table.
+      parameters:
+        - name: table
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The name of the database table to retrieve.
+      responses:
+        '200':
+          description: Table content retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TableContent'
+        '400':
+          description: Missing or invalid table name
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error while retrieving table content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /followuser:
+    post:
+      summary: Follow or Unfollow a User
+      description: Toggles following status for a user based on the provided IDs.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FollowRequest'
+      responses:
+        '200':
+          description: Operation completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FollowResponse'
+        '400':
+          description: Invalid request or missing data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error while processing the request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /getfollowed:
+    get:
+      summary: Retrieve Followed Users
+      description: Retrieves a list of users followed by the given owner.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetFollowedRequest'
+      responses:
+        '200':
+          description: List of followed users retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFollowedResponse'
+        '400':
+          description: Invalid request or missing data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error while retrieving the list of followed users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /getfollowers:
+    get:
+      summary: Retrieve Followers
+      description: Retrieves a list of users following the given owner.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetFollowersRequest'
+      responses:
+        '200':
+          description: List of followers retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetFollowersResponse'
+        '400':
+          description: Invalid request or missing data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error while retrieving the list of followers
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        
+  /createpost:
+    post:
+      summary: Create a Post
+      description: Creates a new post with an associated image.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CreatePostRequest'
+      responses:
+        '200':
+          description: Post created successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Post created"
+        '400':
+          description: Invalid request or missing data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '405':
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error while processing the post creation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /deletepost:
+    delete:
+      summary: Delete a Post
+      description: Deletes a post based on the provided post ID and requester ID.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeletePostRequest'
+      responses:
+        '200':
+          description: Post deleted successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Post deleted"
+        '400':
+          description: Invalid request or missing data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error while deleting the post
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /getuserposts:
+    get:
+      summary: Retrieve User Posts
+      description: Retrieves all posts made by a specific user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetUserPostsRequest'
+      responses:
+        '200':
+          description: User posts retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetUserPostsResponse'
+        '400':
+          description: Invalid request or missing data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error while retrieving user posts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /likepost:
+    post:
+      summary: Like or Unlike a Post
+      description: Toggles the like status for a given post and user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LikePostRequest'
+      responses:
+        '200':
+          description: Post like status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LikePostResponse'
+        '400':
+          description: Invalid request or missing data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error while updating like status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /getlikes:
+    get:
+      summary: Retrieve Likes for a Post
+      description: Retrieves all users who liked a specific post.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetLikesRequest'
+      responses:
+        '200':
+          description: Likes retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetLikesResponse'
+        '400':
+          description: Invalid request or missing data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error while retrieving likes
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        
+  /commentpost:
+    post:
+      summary: Add a Comment to a Post
+      description: Adds a new comment to a specific post.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentPostRequest'
+      responses:
+        '200':
+          description: Comment posted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentPostResponse'
+        '400':
+          description: Invalid request or missing data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '405':
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error while posting comment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /deletecomment:
+    delete:
+      summary: Delete a Comment
+      description: Deletes a specific comment from a post.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteCommentRequest'
+      responses:
+        '200':
+          description: Comment deleted successfully
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "Comment deleted"
+        '400':
+          description: Invalid request or missing data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '405':
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error while deleting comment
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /getcomments:
+    get:
+      summary: Retrieve Comments for a Post
+      description: Retrieves all comments for a specific post.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GetCommentsRequest'
+      responses:
+        '200':
+          description: Comments retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCommentsResponse'
+        '400':
+          description: Invalid request or missing data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Server error while retrieving comments
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
-    FeedRequest:
+
+    LoginRequest:
       type: object
       properties:
         username:
@@ -50,6 +588,30 @@ components:
       required:
         - username
 
+    LoginResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: "User logged in"
+        data:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 123
+            username:
+              type: string
+              example: "johndoe"
+
+    FeedRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "johndoe"
+      required:
+        - username
     FeedResponse:
       type: object
       properties:
@@ -60,6 +622,379 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Post'
+    
+    ProfileRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "johndoe"
+        ID:
+          type: integer
+          example: 123
+      required:
+        - username
+        - ID
+    ProfileResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        message:
+          type: string
+          example: "Profile page retrieved"
+        data:
+          type: object
+          properties:
+            username:
+              type: string
+              example: "johndoe"
+            followerCount:
+              type: integer
+              example: 150
+            followedCount:
+              type: integer
+              example: 200
+            posts:
+              type: array
+              items:
+                $ref: '#/components/schemas/Post'
+            postsCount:
+              type: integer
+              example: 25
+
+    ChangeUsernameRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 123
+        username:
+          type: string
+          example: "new_username"
+      required:
+        - id
+        - username
+    ChangeUsernameResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: "Username changed"
+        user:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 123
+            username:
+              type: string
+              example: "new_username"
+
+    BanRequest:
+      type: object
+      properties:
+        ownerID:
+          type: integer
+          example: 123
+        prayID:
+          type: integer
+          example: 456
+      required:
+        - ownerID
+        - prayID
+    BanResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "User banned!"
+
+    GetBansRequest:
+      type: object
+      properties:
+        ownerID:
+          type: integer
+          example: 123
+      required:
+        - ownerID
+    GetBansResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        message:
+          type: string
+          example: "Banned users retrieved"
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              userID:
+                type: integer
+                example: 456
+    
+
+    FollowRequest:
+      type: object
+      properties:
+        ownerID:
+          type: integer
+          example: 123
+        followedID:
+          type: integer
+          example: 456
+      required:
+        - ownerID
+        - followedID
+    FollowResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        message:
+          type: string
+          example: "User followed"
+        data:
+          type: object
+          properties:
+            ownerID:
+              type: integer
+              example: 123
+            followedID:
+              type: integer
+              example: 456
+
+    GetFollowedRequest:
+      type: object
+      properties:
+        ownerID:
+          type: integer
+          example: 123
+      required:
+        - ownerID
+    GetFollowedResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        message:
+          type: string
+          example: "Followed users retrieved"
+        Followed:
+          type: array
+          items:
+            type: object
+            properties:
+              userID:
+                type: integer
+                example: 456
+
+    GetFollowersRequest:
+      type: object
+      properties:
+        ownerID:
+          type: integer
+          example: 123
+      required:
+        - ownerID
+
+    GetFollowersResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        message:
+          type: string
+          example: "Followers retrieved"
+        Followers:
+          type: array
+          items:
+            type: object
+            properties:
+              userID:
+                type: integer
+                example: 456
+
+    CreatePostRequest:
+      type: object
+      properties:
+        ownerID:
+          type: string
+          example: "123"
+        file:
+          type: string
+          format: binary
+          description: "The image file to upload"
+
+    DeletePostRequest:
+      type: object
+      properties:
+        postID:
+          type: integer
+          example: 456
+        requesterID:
+          type: integer
+          example: 123
+      required:
+        - postID
+        - requesterID
+      
+    GetUserPostsRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "johndoe"
+      required:
+        - username
+    GetUserPostsResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        message:
+          type: string
+          example: "User posts retrieved"
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Post'
+    
+    LikePostRequest:
+      type: object
+      properties:
+        postID:
+          type: integer
+          example: 123
+        ownerID:
+          type: integer
+          example: 456
+      required:
+        - postID
+        - ownerID
+    LikePostResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        message:
+          type: string
+          example: "Post liked"
+        data:
+          type: object
+          properties:
+            postID:
+              type: integer
+              example: 123
+            ownerID:
+              type: integer
+              example: 456
+    
+    GetLikesRequest:
+      type: object
+      properties:
+        postID:
+          type: integer
+          example: 123
+      required:
+        - postID
+    GetLikesResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        message:
+          type: string
+          example: "Likes retrieved successfully"
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              userID:
+                type: integer
+                example: 456
+
+    CommentPostRequest:
+      type: object
+      properties:
+        postID:
+          type: integer
+          example: 123
+        ownerID:
+          type: integer
+          example: 456
+        content:
+          type: string
+          example: "This is a comment."
+    CommentPostResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        message:
+          type: string
+          example: "Comment posted"
+        data:
+          $ref: '#/components/schemas/Comment'
+
+    DeleteCommentRequest:
+      type: object
+      properties:
+        commentID:
+          type: integer
+          example: 101
+        requesterID:
+          type: integer
+          example: 789
+        postID:
+          type: integer
+          example: 123
+      required:
+        - commentID
+        - requesterID
+        - postID
+
+    GetCommentsRequest:
+      type: object
+      properties:
+        postID:
+          type: integer
+          example: 123
+      required:
+        - postID
+    GetCommentsResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          example: "success"
+        message:
+          type: string
+          example: "Comments retrieved successfully"
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Comment'
+
+    TableContent:
+      type: array
+      items:
+        type: object
+        description: A single row in the table, with key-value pairs for each column.
+        additionalProperties:
+          type: string
 
     Post:
       type: object
@@ -87,7 +1022,30 @@ components:
           type: integer
           example: 789
 
-     ErrorResponse:
+    Comment:
+      type: object
+      properties:
+        commentID:
+          type: integer
+          example: 101
+        content:
+          type: string
+          example: "This is a comment."
+        postID:
+          type: integer
+          example: 123
+        ownerID:
+          type: integer
+          example: 456
+        createdAt:
+          type: string
+          format: date-time
+          example: "2024-01-01T12:00:00Z"
+        requesterID:
+          type: integer
+          example: 789
+
+    ErrorResponse:
       type: object
       properties:
         status:
@@ -100,7 +1058,7 @@ components:
           type: array
           items:
             type: string
-            example: "Missing username in request body"
+            example: "Missing ID in request body"
 
 
 
