@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	structs "github.com/edmii/WasaProject/service/models"
@@ -221,7 +222,7 @@ func sendErrorResponse(w http.ResponseWriter, message string, details []string, 
 	w.WriteHeader(statusCode)
 
 	response := structs.ErrorResponse{
-		Status:  "error",
+		Status:  fmt.Sprintf("error %d", statusCode),
 		Message: message,
 		Details: details,
 	}
