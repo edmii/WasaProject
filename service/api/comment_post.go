@@ -21,7 +21,7 @@ import (
 // 	RequesterID int `json:"requesterID"`
 // }
 
-func (rt *_router) CommentPost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) commentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	if r.Method != "POST" {
 		utils.SendErrorResponse(w, "Invalid request method", []string{"Only POST requests are allowed"}, http.StatusMethodNotAllowed)
 		return
@@ -127,7 +127,7 @@ func (rt *_router) CommentPost(w http.ResponseWriter, r *http.Request, ps httpro
 //			return
 //		}
 //	}
-func (rt *_router) DeleteComment(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) uncommentPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	if r.Method != "DELETE" {
 		utils.SendErrorResponse(w, "Invalid request method", []string{"Only DELETE requests are allowed"}, http.StatusMethodNotAllowed)
 		return
@@ -189,7 +189,7 @@ func (rt *_router) DeleteComment(w http.ResponseWriter, r *http.Request, ps http
 // 	_, _ = w.Write([]byte("Comment deleted"))
 // }
 
-func (rt *_router) GetComments(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) getComments(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var comment structs.Comment
 
 	err := json.NewDecoder(r.Body).Decode(&comment)

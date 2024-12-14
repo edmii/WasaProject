@@ -7,7 +7,7 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
-func (rt *_router) DestroyDB(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) destroyDB(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	err := rt.db.DestroyDB()
 	if err != nil {
 		ctx.Logger.Info("Failed to destroy DB", err.Error())

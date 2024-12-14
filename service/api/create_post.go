@@ -222,7 +222,7 @@ func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httpro
 // 	_, _ = w.Write([]byte("Post created"))
 // }
 
-func (rt *_router) DeletePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) deletePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var post structs.Post
 	err := json.NewDecoder(r.Body).Decode(&post)
 	if err != nil {
@@ -272,7 +272,7 @@ func (rt *_router) DeletePost(w http.ResponseWriter, r *http.Request, ps httprou
 // 	_, _ = w.Write([]byte("Post deleted"))
 // }
 
-func (rt *_router) GetUserPosts(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) getUserPosts(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var user structs.User
 
 	err := json.NewDecoder(r.Body).Decode(&user)

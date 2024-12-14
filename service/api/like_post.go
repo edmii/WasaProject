@@ -183,7 +183,7 @@ func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httpro
 //			http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 //		}
 //	}
-func (rt *_router) GetLikes(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) getLikes(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var like structs.Like
 
 	err := json.NewDecoder(r.Body).Decode(&like)

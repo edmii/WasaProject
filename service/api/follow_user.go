@@ -184,7 +184,7 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 // 	}
 // }
 
-func (rt *_router) GetFollowed(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) getFollowed(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var follow structs.Follow
 
 	err := json.NewDecoder(r.Body).Decode(&follow)
@@ -255,7 +255,7 @@ func (rt *_router) GetFollowed(w http.ResponseWriter, r *http.Request, ps httpro
 // 	}
 // }
 
-func (rt *_router) GetFollowers(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) getFollowers(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var follow structs.Follow
 
 	err := json.NewDecoder(r.Body).Decode(&follow)
