@@ -18,7 +18,7 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.PUT("/changeusername", rt.wrap(rt.setMyUserName))
 
 	rt.router.POST("/banuser", rt.wrap(rt.banUser))
-	rt.router.POST("/banuser", rt.wrap(rt.unbanUser))
+	rt.router.POST("/unbanuser", rt.wrap(rt.unbanUser))
 	rt.router.GET("/getbans", rt.wrap(rt.GetBans))
 
 	rt.router.POST("/followuser", rt.wrap(rt.followUser))
