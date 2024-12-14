@@ -74,7 +74,7 @@ import (
 // 	}
 // }
 
-func (rt *_router) getFeed(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (rt *_router) getMyStream(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var user structs.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
@@ -129,7 +129,7 @@ func (rt *_router) getFeed(w http.ResponseWriter, r *http.Request, ps httprouter
 	}
 }
 
-func (rt *_router) getProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func (rt *_router) getUserProfile(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	var user structs.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {

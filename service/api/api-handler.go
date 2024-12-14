@@ -6,8 +6,8 @@ import "net/http"
 func (rt *_router) Handler() http.Handler {
 	// Register routes
 	rt.router.GET("/", rt.getHelloWorld)
-	rt.router.GET("/feed", rt.getFeed)
-	rt.router.GET("/profile", rt.getProfile)
+	rt.router.GET("/feed", rt.getMyStream)
+	rt.router.GET("/profile", rt.getUserProfile)
 
 	// rt.router.POST("/login", rt.wrap(rt.Login))
 
@@ -30,7 +30,8 @@ func (rt *_router) Handler() http.Handler {
 	rt.router.DELETE("/deletepost", rt.wrap(rt.DeletePost))
 	rt.router.GET("/getuserposts", rt.wrap(rt.GetUserPosts))
 
-	rt.router.POST("/likepost", rt.wrap(rt.LikePost))
+	rt.router.POST("/likepost", rt.wrap(rt.likePhoto))
+	rt.router.POST("/unlikepost", rt.wrap(rt.unlikePhoto))
 	rt.router.GET("/getlikes", rt.wrap(rt.GetLikes))
 
 	rt.router.POST("/commentpost", rt.wrap(rt.CommentPost))

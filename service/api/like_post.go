@@ -15,7 +15,7 @@ import (
 // 	OwnerID int `json:"ownerID"`
 // }
 
-func (rt *_router) LikePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) likePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var like structs.Like
 
 	err := json.NewDecoder(r.Body).Decode(&like)
@@ -47,16 +47,71 @@ func (rt *_router) LikePost(w http.ResponseWriter, r *http.Request, ps httproute
 	var response map[string]interface{}
 
 	switch result {
-	case 1: // Post unliked
+	case 1: // do nothing
 		response = map[string]interface{}{
 			"status":  "success",
-			"message": "Post unliked",
+			"message": "Post already liked",
 			"data":    like,
 		}
 	case 2: // Post liked
 		response = map[string]interface{}{
 			"status":  "success",
 			"message": "Post liked",
+			"data":    like,
+		}
+	default:
+		utils.SendErrorResponse(w, "Unexpected result", []string{"Unknown result code from LikePost operation"}, http.StatusInternalServerError)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		ctx.Logger.Info("Failed to encode response", err.Error())
+		utils.SendErrorResponse(w, "Server error", []string{"Failed to encode response", err.Error()}, http.StatusInternalServerError)
+	}
+}
+
+func (rt *_router) unlikePhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	var like structs.Like
+
+	err := json.NewDecoder(r.Body).Decode(&like)
+	if err != nil {
+		ctx.Logger.Info("Failed to decode request body ", err.Error())
+		utils.SendErrorResponse(w, "Invalid request body", []string{"Failed to decode JSON request body"}, http.StatusBadRequest)
+		return
+	}
+
+	if like.PostID <= 0 {
+		utils.SendErrorResponse(w, "Invalid request", []string{"Invalid PostID"}, http.StatusBadRequest)
+		return
+	}
+
+	if like.OwnerID <= 0 {
+		utils.SendErrorResponse(w, "Invalid request", []string{"Invalid OwnerID"}, http.StatusBadRequest)
+		return
+	}
+
+	result, err := rt.db.UnlikePost(like.PostID, like.OwnerID)
+	if err != nil {
+		ctx.Logger.Info("Failed to like post", err.Error())
+		utils.SendErrorResponse(w, "Database error", []string{"Failed to like/unlike post", err.Error()}, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	var response map[string]interface{}
+
+	switch result {
+	case 1: // Post unliked
+		response = map[string]interface{}{
+			"status":  "success",
+			"message": "Post unliked",
+			"data":    like,
+		}
+	case 2: // do nothing
+		response = map[string]interface{}{
+			"status":  "success",
+			"message": "Post already not liked",
 			"data":    like,
 		}
 	default:

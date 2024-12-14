@@ -58,6 +58,7 @@ type AppDatabase interface {
 	GetPostsCount(userID int) (int, error)
 
 	LikePost(PostID int, OwnerID int) (int, error)
+	UnlikePost(PostID int, OwnerID int) (int, error)
 	GetLikes(ownerID int) ([]int, error)
 	GetLikesCount(postID int) (int, error)
 
