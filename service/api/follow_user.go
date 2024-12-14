@@ -15,7 +15,62 @@ import (
 // 	OwnerID    int `json:"ownerID"`
 // }
 
-func (rt *_router) FollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) followUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+	var follow structs.Follow
+
+	err := json.NewDecoder(r.Body).Decode(&follow)
+	if err != nil {
+		ctx.Logger.Info("Failed to decode request body ", err.Error())
+		utils.SendErrorResponse(w, "Invalid request body", []string{"Failed to decode JSON request body"}, http.StatusBadRequest)
+		return
+	}
+
+	if follow.FollowedID <= 0 {
+		utils.SendErrorResponse(w, "Invalid request", []string{"Invalid followedID"}, http.StatusBadRequest)
+		return
+	}
+
+	if follow.OwnerID <= 0 {
+		utils.SendErrorResponse(w, "Invalid request", []string{"Invalid OwnerID"}, http.StatusBadRequest)
+		return
+	}
+
+	result, err := rt.db.FollowUser(follow.OwnerID, follow.FollowedID)
+	if err != nil {
+		ctx.Logger.Info("Failed to follow user", err.Error())
+		utils.SendErrorResponse(w, "Database error", []string{"Failed to follow/unfollow user", err.Error()}, http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	var response map[string]interface{}
+
+	switch result {
+	case 1: // User unfollowed
+		response = map[string]interface{}{
+			"status":  "success",
+			"message": "User already followed",
+			"data":    follow,
+		}
+	case 2: // User followed
+		response = map[string]interface{}{
+			"status":  "success",
+			"message": "User followed",
+			"data":    follow,
+		}
+	default:
+		utils.SendErrorResponse(w, "Unexpected result", []string{"Unknown result code from FollowUser operation"}, http.StatusInternalServerError)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		ctx.Logger.Info("Failed to encode response", err.Error())
+		utils.SendErrorResponse(w, "Server error", []string{"Failed to encode response", err.Error()}, http.StatusInternalServerError)
+	}
+}
+
+func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	var follow structs.Follow
 
 	err := json.NewDecoder(r.Body).Decode(&follow)
@@ -56,7 +111,7 @@ func (rt *_router) FollowUser(w http.ResponseWriter, r *http.Request, ps httprou
 	case 2: // User followed
 		response = map[string]interface{}{
 			"status":  "success",
-			"message": "User followed",
+			"message": "User already not followed",
 			"data":    follow,
 		}
 	default:

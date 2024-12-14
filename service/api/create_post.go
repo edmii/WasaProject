@@ -25,7 +25,7 @@ import (
 // 	RequesterID int `json:"requesterID"`
 // }
 
-func (rt *_router) CreatePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
+func (rt *_router) uploadPhoto(w http.ResponseWriter, r *http.Request, ps httprouter.Params, ctx reqcontext.RequestContext) {
 	if r.Method != "POST" {
 		utils.SendErrorResponse(w, "Invalid request method", []string{"Only POST requests are allowed"}, http.StatusMethodNotAllowed)
 		return
