@@ -83,7 +83,7 @@ func (rt *_router) unbanUser(w http.ResponseWriter, r *http.Request, ps httprout
 		return
 	}
 
-	result, err := rt.db.BanUser(ban.OwnerID, ban.PrayID)
+	result, err := rt.db.UnbanUser(ban.OwnerID, ban.PrayID)
 	if err != nil {
 		ctx.Logger.Info("Failed to ban user", err.Error())
 		utils.SendErrorResponse(w, "Database error", []string{"Failed to ban/unban user", err.Error()}, http.StatusInternalServerError)

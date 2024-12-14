@@ -90,7 +90,7 @@ func (rt *_router) unfollowUser(w http.ResponseWriter, r *http.Request, ps httpr
 		return
 	}
 
-	result, err := rt.db.FollowUser(follow.OwnerID, follow.FollowedID)
+	result, err := rt.db.UnfollowUser(follow.OwnerID, follow.FollowedID)
 	if err != nil {
 		ctx.Logger.Info("Failed to follow user", err.Error())
 		utils.SendErrorResponse(w, "Database error", []string{"Failed to follow/unfollow user", err.Error()}, http.StatusInternalServerError)
